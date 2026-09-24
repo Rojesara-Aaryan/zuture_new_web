@@ -1,0 +1,272 @@
+@import "tailwindcss";
+
+/* ============================================================
+   ZUTURE — DESIGN TOKENS
+
+   Direction: heavy uppercase grotesque at display scale, against
+   technical mono labels and fine rules. The weight is the point —
+   the page should hit, then explain itself in small type.
+
+   The logo's cyan-to-green gradient is the signature. It appears
+   as light — rules, auras, progress, a word at a time — never as
+   a flat fill.
+   ============================================================ */
+
+@theme {
+  --color-void: #000000;
+  --color-ink: #08090a;
+  --color-slate-deep: #0e1012;
+  --color-edge: #17191c;
+  --color-edge-bright: #262a2f;
+
+  --color-bone: #f4f6f7;
+
+  --color-text-hi: #edf0f1;
+  --color-text-mid: #8b9298;
+  --color-text-lo: #565d64;
+
+  /* Logo stops */
+  --color-recirc: #00c8ff;
+  --color-teal: #12bfa8;
+  --color-fresh: #36cc00;
+
+  --font-display: var(--font-archivo);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+:root {
+  --bg: #000000;
+  --fg: #edf0f1;
+  --brand-gradient: linear-gradient(105deg, #00c8ff 0%, #12bfa8 46%, #36cc00 100%);
+  color-scheme: dark;
+}
+
+* {
+  min-width: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Lenis drives scrolling; never hand it to CSS smooth-scroll. */
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-x: clip;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+::selection {
+  background: var(--color-teal);
+  color: #000;
+}
+
+/* ---------- Type ---------- */
+
+/**
+ * Display: Instrument Serif, mixed case, optical sizes kept modest.
+ * Headings are meant to be read, not shouted.
+ */
+@utility display {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+  text-transform: uppercase;
+}
+
+/* Secondary voice inside a heading. Archivo has no italic worth using at this
+   size, so the contrast comes from weight and tracking instead. */
+@utility display-em {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+@utility label {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+@utility data-num {
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+@utility gutter {
+  padding-inline: clamp(1.25rem, 4.5vw, 5.5rem);
+}
+
+/* ---------- Brand gradient, used as light ---------- */
+
+@utility grad-text {
+  /* width:max-content matters: the gradient is painted across the element box,
+     so a full-width heading would only ever show its first few percent. */
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
+  background-image: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility grad-rule {
+  background-image: var(--brand-gradient);
+}
+
+@utility grad-border {
+  border-color: transparent;
+  background-image: linear-gradient(#000, #000), var(--brand-gradient);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* A soft aura of brand light. */
+@utility aura {
+  background-image: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--color-teal) 26%, transparent),
+    transparent
+  );
+}
+
+@utility line-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+@utility grain {
+  position: relative;
+}
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Initial state for JS-driven reveals — avoids a flash of unstyled motion. */
+[data-anim] {
+  visibility: hidden;
+}
+html.anim-ready [data-anim] {
+  visibility: visible;
+}
+
+/* ---------- Fixed chrome ---------- */
+:root {
+  --nav-fg: #edf0f1;
+  --nav-fg-dim: #8b9298;
+  --nav-edge: rgba(255, 255, 255, 0.12);
+  --nav-scrim: rgba(0, 0, 0, 0.8);
+}
+.chrome-fg {
+  color: var(--nav-fg);
+}
+.chrome-dim {
+  color: var(--nav-fg-dim);
+}
+.chrome-edge {
+  border-color: var(--nav-edge);
+}
+
+@keyframes nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(2px);
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-anim],
+  html.anim-ready [data-anim] {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Light act ----------
+   One section inverts to bone. Fixed chrome reads these so it flips with it. */
+html.on-light {
+  --nav-fg: #08090a;
+  --nav-fg-dim: #5a6167;
+  --nav-edge: rgba(8, 9, 10, 0.16);
+  --nav-scrim: rgba(244, 246, 247, 0.88);
+}
+.logo-dark {
+  opacity: 0;
+}
+html.on-light .logo-light {
+  opacity: 0;
+}
+html.on-light .logo-dark {
+  opacity: 1;
+}
+.logo-light,
+.logo-dark {
+  transition: opacity 0.4s linear;
+}
+
+@keyframes case-in {
+  from { opacity: 0; transform: translateY(16px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* ---------- Media protection ----------
+   Deterrents only. A rendered image can always be saved by someone who wants
+   to; this stops drag-to-desktop and the iOS long-press save sheet, which is
+   what a casual visitor would reach for. See ProtectMedia.tsx. */
+img,
+picture,
+video {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
