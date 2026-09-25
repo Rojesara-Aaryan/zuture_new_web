@@ -3,9 +3,8 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
-import { MODELS, PLATFORM, SHOT } from "@/data/site";
-import SectionLabel from "./ui/SectionLabel";
-import Reveal from "./ui/Reveal";
+import { MODELS, MODELS_LEAD, PLATFORM, SHOT } from "@/data/site";
+import SectionHead from "./ui/SectionHead";
 
 const ACCENT = { fresh: "#36cc00", recirc: "#00c8ff" } as const;
 
@@ -66,14 +65,16 @@ export default function Models() {
   return (
     <section id="models" ref={root} className="relative bg-void">
       <div className="gutter pt-24 sm:pt-32">
-        <SectionLabel>Two of them</SectionLabel>
-        <Reveal
-          as="h2"
-          className="display mt-7 max-w-[20ch] text-[clamp(2.1rem,5.6vw,4.4rem)] text-text-hi"
-        >
-          One platform.{" "}
-          <span className="display-em text-text-mid">Two ways to catch a particle.</span>
-        </Reveal>
+        <SectionHead
+          label="Two of them"
+          heading={
+            <>
+              One platform.{" "}
+              <span className="display-em text-text-mid">Two ways to catch a particle.</span>
+            </>
+          }
+          lead={MODELS_LEAD}
+        />
       </div>
 
       {/* The pair */}

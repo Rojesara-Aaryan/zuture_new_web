@@ -3,8 +3,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { ABOUT, BRAND } from "@/data/site";
-import Reveal from "./ui/Reveal";
-import SectionLabel from "./ui/SectionLabel";
+import SectionHead from "./ui/SectionHead";
 
 export default function About() {
   const root = useRef<HTMLElement>(null);
@@ -57,34 +56,26 @@ export default function About() {
   return (
     <section id="about" ref={root} className="relative bg-void py-24 sm:py-32">
       <div className="gutter">
-        <SectionLabel>Who is building it</SectionLabel>
+        <SectionHead label="Who is building it" heading={ABOUT.mandate} lead={ABOUT.body} />
 
-        <Reveal as="h2" className="display mt-6 max-w-[16ch] text-[clamp(2.1rem,5.6vw,4.4rem)]">
-          {ABOUT.mandate}
-        </Reveal>
-
-        <div className="mt-12 grid gap-12 border-t border-edge pt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-20">
-          <Reveal
-            as="p"
-            split="words"
-            className="max-w-[50ch] text-[0.95rem] leading-relaxed text-text-mid sm:text-lg"
-          >
-            {ABOUT.body}
-          </Reveal>
-
-          <dl className="grid grid-cols-1 gap-px self-start sm:grid-cols-3 lg:grid-cols-1">
-            {ABOUT.milestones.map(([k, v]) => (
-              <div key={k} className="border-t border-edge py-4 first:border-t-0 lg:first:border-t">
-                <dt className="display text-[clamp(1.05rem,2vw,1.5rem)] text-text-hi">{k}</dt>
-                <dd className="mt-1.5 text-[0.8125rem] leading-relaxed text-text-mid">{v}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
+        {/* Three across the full width — stacked in one column it left two
+            thirds of the row empty next to a very tall heading. */}
+        <dl className="mt-14 grid gap-x-10 sm:grid-cols-3">
+          {ABOUT.milestones.map(([k, v]) => (
+            <div key={k} className="border-t border-edge py-6">
+              <dt className="display text-[clamp(1.05rem,2vw,1.5rem)] text-text-hi">{k}</dt>
+              <dd className="mt-1.5 text-[0.8125rem] leading-relaxed text-text-mid">{v}</dd>
+            </div>
+          ))}
+        </dl>
 
         {/* The quote */}
-        <figure className="relative my-24 overflow-hidden py-10 sm:my-32">
-          <blockquote className="about-quote display max-w-[22ch] text-[clamp(1.7rem,4.2vw,3.4rem)] text-text-hi">
+        {/* A 22ch measure at display scale ran to six lines down the left edge
+            with the right half dark. A wider measure at a smaller size says the
+            same thing in three and uses the row. */}
+        <figure className="relative my-20 overflow-hidden py-8 sm:my-24">
+          <span aria-hidden className="grad-rule mb-9 block h-px w-24" />
+          <blockquote className="about-quote display max-w-[38ch] text-[clamp(1.45rem,3vw,2.5rem)] text-text-hi">
             {ABOUT.quote}
           </blockquote>
         </figure>
@@ -92,14 +83,13 @@ export default function About() {
         {/* Patent coverage */}
         <div className="patent-list border-t border-edge pt-10">
           <p className="label text-text-lo">Protected by broad patent coverage</p>
-          <ul className="mt-8 flex flex-col">
+          {/* Three across rather than three stacked: each claim is short, so a
+              full-width row per claim left most of the line empty. */}
+          <ul className="mt-8 grid gap-x-10 sm:grid-cols-3">
             {ABOUT.patents.map((claim) => (
-              <li
-                key={claim}
-                className="patent-row flex items-baseline gap-5 border-b border-edge py-5 last:border-b-0"
-              >
-                <span aria-hidden className="grad-rule mt-3 h-px w-6 shrink-0" />
-                <span className="display text-[clamp(1.05rem,2vw,1.5rem)] text-text-hi">
+              <li key={claim} className="patent-row border-t border-edge py-6">
+                <span aria-hidden className="grad-rule mb-5 block h-px w-6" />
+                <span className="display block text-[clamp(1.05rem,1.7vw,1.3rem)] text-text-hi">
                   {claim}
                 </span>
               </li>
@@ -110,7 +100,9 @@ export default function About() {
         {/* Founders */}
         <div className="about-team mt-20 border-t border-edge pt-10 sm:mt-28">
           <p className="label text-text-lo">The minds behind it</p>
-          <div className="mt-8 grid gap-8 sm:grid-cols-2 sm:gap-12">
+          {/* Two names and the provenance note share one row of three, so the
+              right-hand third is used rather than left dark. */}
+          <div className="mt-8 grid gap-8 sm:grid-cols-3 sm:gap-10">
             {ABOUT.team.map((person) => (
               <div key={person.name} className="about-person">
                 <p className="display text-[clamp(1.4rem,2.8vw,2.2rem)] text-text-hi">
@@ -119,11 +111,11 @@ export default function About() {
                 <p className="label mt-2 text-text-mid">{person.role}</p>
               </div>
             ))}
+            <p className="text-[0.8125rem] leading-relaxed text-text-lo sm:self-end sm:pb-1">
+              Founded {BRAND.founded} in {BRAND.city}. Engineered, manufactured and supported in
+              India, for Indian air.
+            </p>
           </div>
-          <p className="mt-10 max-w-[46ch] text-[0.8125rem] leading-relaxed text-text-lo">
-            Founded {BRAND.founded} in {BRAND.city}. Engineered, manufactured and supported in
-            India, for Indian air.
-          </p>
         </div>
       </div>
     </section>

@@ -67,25 +67,34 @@ export default function Treatment() {
   return (
     <section id="system" ref={root} className="relative bg-bone text-ink">
       <div className="gutter py-24 sm:py-32">
-        <header className="max-w-[46rem]">
-          <p className="label flex items-center gap-3 text-ink/45">
-            <span aria-hidden className="grad-rule h-px w-8 shrink-0 sm:w-12" />
-            The system
-          </p>
-          <Reveal as="h2" className="display mt-7 text-[clamp(2rem,5vw,3.75rem)] text-ink">
-            Not a purifier.
-            <br />
-            <span className="display-em">An intelligent air treatment system.</span>
-          </Reveal>
-          <Reveal
-            as="p"
-            split="words"
-            className="mt-7 max-w-[48ch] text-[0.9375rem] leading-relaxed text-ink/60"
-          >
-            <span className="text-ink">Treat</span>, verb &mdash; to put something through a process
-            that changes it. A purifier strains the air already in the room and hands it back.
-            Zuture does four things to it, and works out for itself which one the room needs.
-          </Reveal>
+        {/* Heading left, definition bottom-right. Same opener as the dark
+            sections, written out here because this act is inverted to bone and
+            carries its own ink-on-light colours. */}
+        <header className="grid gap-y-7 lg:grid-cols-12 lg:gap-x-10">
+          <div className="lg:col-span-7">
+            <p className="label flex items-center gap-3 text-ink/45">
+              <span aria-hidden className="grad-rule h-px w-8 shrink-0 sm:w-12" />
+              The system
+            </p>
+            <Reveal as="h2" className="display mt-7 text-[clamp(2rem,5vw,3.75rem)] text-ink">
+              Not a purifier.
+              <br />
+              <span className="display-em">An intelligent air treatment system.</span>
+            </Reveal>
+          </div>
+
+          <div className="lg:col-span-4 lg:col-start-9 lg:self-end">
+            <Reveal
+              as="p"
+              split="words"
+              className="max-w-[46ch] text-[0.9375rem] leading-relaxed text-ink/60 lg:pb-2"
+            >
+              <span className="text-ink">Treat</span>, verb &mdash; to put something through a
+              process that changes it. A purifier strains the air already in the room and hands it
+              back. Zuture does four things to it, and works out for itself which one the room
+              needs.
+            </Reveal>
+          </div>
         </header>
 
         <div className="bento mt-16 grid gap-3 sm:mt-20 sm:grid-cols-2 lg:grid-cols-6">

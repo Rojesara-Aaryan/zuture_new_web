@@ -41,30 +41,33 @@ export default function NextUp({ from }: { from: string }) {
     <div ref={root} className="gutter pb-4 pt-8">
       <span aria-hidden className="nu-rule grad-rule block h-px w-full origin-left" />
 
-      <Link
-        href={next.href}
-        className="group mt-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"
-      >
-        <div>
+      {/* Same opener as the sections: name left, supporting line bottom-right.
+          With the line set under the heading instead, the arrow sat alone at
+          the far right and the whole middle of the row was empty. */}
+      <Link href={next.href} className="group mt-10 grid gap-y-7 lg:grid-cols-12 lg:gap-x-10">
+        <div className="lg:col-span-7">
           <p className="nu-reveal label text-text-lo">Next</p>
           <p className="nu-reveal display mt-4 text-[clamp(2.1rem,6vw,4.6rem)] text-text-hi transition-colors duration-300 group-hover:text-fresh">
             {next.label}
           </p>
-          <p className="nu-reveal mt-5 max-w-[48ch] text-[0.9375rem] leading-relaxed text-text-mid">
-            {next.line}
-          </p>
         </div>
 
-        <span className="nu-reveal flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-edge-bright text-text-mid transition-colors duration-300 group-hover:border-fresh group-hover:text-fresh">
-          <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden>
-            <path
-              d="M0 6h14M9 1l5 5-5 5"
-              stroke="currentColor"
-              strokeWidth="1.1"
-              className="transition-transform duration-300 group-hover:translate-x-1"
-            />
-          </svg>
-        </span>
+        <div className="flex items-end justify-between gap-6 lg:col-span-4 lg:col-start-9 lg:pb-2">
+          <p className="nu-reveal max-w-[38ch] text-[0.9375rem] leading-relaxed text-text-mid">
+            {next.line}
+          </p>
+
+          <span className="nu-reveal flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-edge-bright text-text-mid transition-colors duration-300 group-hover:border-fresh group-hover:text-fresh">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden>
+              <path
+                d="M0 6h14M9 1l5 5-5 5"
+                stroke="currentColor"
+                strokeWidth="1.1"
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </svg>
+          </span>
+        </div>
       </Link>
     </div>
   );

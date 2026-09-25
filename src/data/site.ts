@@ -19,9 +19,13 @@ export const BRAND = {
   city: "Ahmedabad, Gujarat",
   thesis:
     "A system that smartly decides whether to introduce fresh air or recirculate, based on real-time atmospheric data.",
-  /* Zuture's own stated differentiator, quoted verbatim. */
+  /* Zuture's own stated differentiator, quoted verbatim. Held in two parts so
+     the turn can carry the brand gradient on its own. The two joined by a
+     single space are the sentence as Zuture states it — keep it word for word
+     if you edit either half. */
   differentiator:
-    "No one literally compares indoor air to outdoor air and chooses the best available air. Zuture's patented technology does.",
+    "No one literally compares indoor air to outdoor air and chooses the best available air.",
+  differentiatorTurn: "Zuture’s patented technology does.",
   /* The positioning. A purifier strains the air it already has; a treatment
      system puts it through a process and changes it. */
   usp: "One small system that treats the air in a room, and decides how.",
@@ -165,6 +169,10 @@ export const FRAGMENTS = [
 /* ------------------------------------------------------------------
    THE TWO — one platform, two filtration cores. No images: not yet.
    ------------------------------------------------------------------ */
+/** Standfirst for the models opener. */
+export const MODELS_LEAD =
+  "Same shell, same intelligence, same single opening in the wall. What changes is where the clean air comes from — and that is the only choice you have to make.";
+
 export const MODELS = [
   {
     id: "z-active",

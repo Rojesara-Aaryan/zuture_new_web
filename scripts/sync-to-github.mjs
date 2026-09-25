@@ -20,7 +20,7 @@
  * cannot drift. The clone's .git directory is never touched.
  */
 import { execFileSync } from "node:child_process";
-import { copyFileSync, mkdirSync, readdirSync, rmSync, statSync, existsSync } from "node:fs";
+import { copyFileSync, mkdirSync, rmSync, statSync, existsSync } from "node:fs";
 import path from "node:path";
 
 const SRC = process.cwd();
@@ -60,25 +60,29 @@ for (const rel of files) {
   copied++;
 }
 
-/** Remove anything in the clone that this project no longer has. */
+/**
+ * Remove files the clone still tracks but this project no longer has.
+ *
+ * Only ever tracked files. An earlier version walked the whole directory and
+ * deleted anything not in the source list, which meant it wiped the clone's
+ * node_modules and .next — thousands of files — every time it ran. Asking git
+ * what it tracks keeps this to the handful of files a rename or a deletion
+ * actually orphans, and leaves everything ignored alone.
+ */
 const keep = new Set(files.map((f) => f.split(path.sep).join("/")));
-let removed = 0;
+const tracked = execFileSync("git", ["ls-files"], { cwd: DEST, encoding: "utf8" })
+  .split("\n")
+  .filter(Boolean);
 
-function prune(dir, rel) {
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    if (rel === "" && entry.name === ".git") continue;
-    const childRel = rel ? `${rel}/${entry.name}` : entry.name;
-    const abs = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      prune(abs, childRel);
-      if (readdirSync(abs).length === 0) rmSync(abs, { recursive: true });
-    } else if (!keep.has(childRel)) {
-      rmSync(abs);
-      removed++;
-    }
+let removed = 0;
+for (const rel of tracked) {
+  if (keep.has(rel)) continue;
+  const abs = path.join(DEST, rel);
+  if (existsSync(abs)) {
+    rmSync(abs);
+    removed++;
   }
 }
-prune(DEST, "");
 
 console.log(`${files.length} files in sync — ${copied} copied, ${removed} removed`);
 console.log(`Clone: ${DEST}`);

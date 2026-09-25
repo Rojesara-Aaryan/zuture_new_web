@@ -136,6 +136,23 @@ html.lenis body {
   color: transparent;
 }
 
+@utility grad-text-run {
+  /* A gradient phrase inside running text, which may wrap.
+
+     grad-text is an inline-block: the ramp is painted once across the whole
+     box, so a phrase that breaks over two lines shows the full gradient on the
+     long line and only its cyan beginning on the short one, which reads as a
+     bug. Going inline with box-decoration-break:clone gives every line
+     fragment its own complete ramp instead. */
+  display: inline;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  background-image: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 @utility grad-rule {
   background-image: var(--brand-gradient);
 }

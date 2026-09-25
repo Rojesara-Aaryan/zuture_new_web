@@ -3,8 +3,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { MATRIX_COLUMNS, MATRIX_ROWS } from "@/data/site";
-import SectionLabel from "./ui/SectionLabel";
-import Reveal from "./ui/Reveal";
+import SectionHead from "./ui/SectionHead";
 
 const TOTAL = MATRIX_ROWS.length;
 /** Counted from the matrix, never typed by hand, so the two cannot drift. */
@@ -77,16 +76,17 @@ export default function Advantage() {
   return (
     <section id="advantage" ref={root} className="relative bg-void py-24 sm:py-32">
       <div className="gutter">
-        <SectionLabel>Benchmarking</SectionLabel>
-
-        <Reveal as="h2" className="display mt-7 text-[clamp(2rem,5.2vw,4rem)] text-text-hi">
-          Zuture advantage.
-        </Reveal>
-
-        <p className="mt-6 max-w-[52ch] text-[0.95rem] leading-relaxed text-text-mid">
-          A straight comparison with the two things people buy instead &mdash; a standard air
-          purifier, and standard ventilation.
-        </p>
+        <SectionHead
+          label="Benchmarking"
+          heading="Zuture advantage."
+          headingClass="text-[clamp(2rem,5.2vw,4rem)] text-text-hi"
+          lead={
+            <>
+              A straight comparison with the two things people buy instead &mdash; a standard air
+              purifier, and standard ventilation.
+            </>
+          }
+        />
 
         {/* ---------- Desktop / tablet: a real table ---------- */}
         <div className="cmp mt-12 hidden sm:block">

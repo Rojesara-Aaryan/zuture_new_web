@@ -49,17 +49,25 @@ no matter how good the type is. So no two sections here share a skeleton:
 | --- | --- |
 | Hero | **Scroll-to-expand** — a framed card of the backlit unit opens out to full bleed on a sticky stage, type low-left, gradient rule |
 | The case | **Sticky split** — figure and unit hold on the left, statements scroll past on the right |
-| The blind spot | Full-bleed macro backdrop, copy held to the left half |
+| The blind spot | **Hard vertical split** — the macro shot takes one half outright at full brightness, the argument takes the other against solid black. The only section on the site whose type sits against the right edge rather than the left |
 | The system | **Light bento grid** — unequal panels, one image cell, tonal inversion |
 | A first look | **Full-bleed shutter**, caption on the frame edge |
 | The models | **Split screen** introducing the pair, then what they share |
 | How it works | **Two drawn timelines**, one per model. The spine draws downward and the numbered nodes pop in sequence; the longer spine is visibly the longer process. Ends on the development note |
 | Zuture advantage | A plain comparison table. Deliberately the least designed section on the page |
-| About | Offset columns with the quote pulled into the centre |
+| About | Three-across rows — milestones, patent claims and founders each run the full width — with the quote as a wide three-line statement drifting against the scroll between them |
 | Reserve | Form panel against a model-tinted wash |
 
-If you add a section, give it a composition none of these have — that variety
-is the design.
+Every section *opens* the same way, though: `ui/SectionHead` sets the label and
+heading in the left seven of twelve columns and the standfirst in the right
+four, aligned to the foot of the heading rather than its top. Display type needs
+a short measure to stay readable, and without that right-hand column every
+section began with half a screen of nothing beside the heading. Variety belongs
+in the body of a section, not its opener. "The system" writes the same grid out
+by hand because it is inverted to bone and carries its own ink-on-light colours.
+
+If you add a section, give its body a composition none of these have — that
+variety is the design.
 
 **Two exceptions: "how it works" and the comparison table.** Both explain the
 product to someone deciding whether to buy it, so they are the plainest things
@@ -82,6 +90,19 @@ the Zuture column, and the count stated in a sentence rather than left for the
 reader to do. On phones it stops being a table entirely and each capability
 becomes a labelled row, because three columns at 390px is unreadable at any
 type size. Resist the urge to make this one clever.
+
+**The blind spot went through three layouts before this one**, and the failures
+are worth knowing. Heading, paragraph and pull quote stacked in one column down
+the left ran to 1288px and read as a wall of text against a dead half-screen.
+Moving the paragraph to a right-hand column helped but left an L-shaped void
+under the heading. Standing the quote beside the argument fixed the void but
+still reduced the photograph to a backdrop so faint it registered as black.
+Giving the image a real half solves all of it: the copy has nowhere to sprawl,
+and the product is finally seen. Do not quietly turn it back into a backdrop.
+
+A fourth version re-set the paragraph as a rhythm — one word at display scale,
+three times, then a fourth row breaking the pattern — and was reverted. If you
+reach for that idea again, know it has been tried.
 
 ### The light act
 
@@ -106,6 +127,19 @@ word **Decide**, which is the patented behaviour and the only heading that gets
 it. Green and blue keep their model meanings (Z-ACTIVE / Z-PURE) — including in
 the filtration chain, where the row's accent tells you which edition you are
 reading. Teal is the neutral accent.
+
+There are two gradient text utilities and they are not interchangeable.
+`grad-text` is an inline-block sized to `max-content` — right for a standalone
+word like **Decide**. `grad-text-run` is for a phrase inside running text that
+may wrap: it is `display: inline` with `box-decoration-break: clone`, so every
+line fragment gets its own complete ramp. Using `grad-text` there paints one
+ramp across the whole box, which leaves a short final line showing only the
+cyan beginning and reading as a bug.
+
+Beware `Reveal` around gradient text. It splits its element into lines with
+SplitText, which tears a gradient span into independent boxes that each restart
+the ramp. The blind spot quote is a plain element with a fade for exactly this
+reason.
 
 Note `grad-text` sets `width: max-content`. The gradient is painted across the
 element box, so a full-width heading would only ever show the first few percent
@@ -224,8 +258,16 @@ src/
   lib/gsap.ts     plugin registration + shared eases
 scripts/
   interaction-smoke.mjs  the regression suite — run it before you ship
+  sync-to-github.mjs     copy the source to the GitHub Desktop clone
+  make-icons.mjs         regenerate the icons from public/brand/mark.png
   crop-renders.mjs  one-off, for the full renders in DATA/ (unused by this site)
 ```
+
+**Icons.** `src/app/favicon.ico`, `icon.png` and `apple-icon.png` are generated
+from the Zuture mark by `scripts/make-icons.mjs`; the App Router picks them up
+by filename, so there are no `<link>` tags to maintain. The Apple one is
+flattened onto the brand's near-black because iOS composites transparency onto
+white, which would leave a pale halo around a mark designed for dark.
 
 **`Chrome` lives in the layout, not in a page.** That is what stops the intro
 replaying on every navigation and the header re-animating each time. It also
