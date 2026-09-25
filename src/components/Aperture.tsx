@@ -65,7 +65,7 @@ export default function Aperture() {
   return (
     <section id="glimpse" ref={root} className="relative bg-void">
       <div className="ap-stage relative flex h-[100svh] min-h-[600px] w-full flex-col overflow-hidden motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:pb-24">
-        <div className="relative flex items-center justify-between gutter pt-24 sm:pt-28">
+        <div className="relative flex items-center justify-between gutter pt-24 max-sm:flex-col max-sm:items-start max-sm:gap-3 sm:pt-28">
           <SectionLabel>A first look, more or less</SectionLabel>
           <p className="label text-text-lo motion-reduce:hidden">
             Exposed{" "}

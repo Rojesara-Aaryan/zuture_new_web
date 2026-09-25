@@ -147,30 +147,44 @@ export default function Advantage() {
           </div>
         </div>
 
-        {/* ---------- Phones: one block per capability ---------- */}
-        <div className="cmp mt-10 flex flex-col sm:hidden">
+        {/* ---------- Phones: column names once, pinned ----------
+            Printing "Purifier / Ventilation / Zuture" inside all 36 cells made
+            the list long and the names noise. Here they sit once in a header
+            that sticks under the nav, each row's marks line up beneath it, and
+            the Zuture column keeps its tinted lane top to bottom as it does on
+            desktop. The names stay in every cell for screen readers. */}
+        <div className="cmp mt-10 sm:hidden">
+          <div className="sticky top-20 z-10 grid grid-cols-3 border-y border-edge bg-void/92 backdrop-blur-sm">
+            {MATRIX_COLUMNS.map((col, i) => (
+              <span
+                key={col}
+                aria-hidden
+                className={`label py-3 text-center text-[0.5625rem] tracking-[0.12em] ${
+                  i === 2 ? "bg-teal/[0.08] text-teal" : "text-text-lo"
+                }`}
+              >
+                {col}
+              </span>
+            ))}
+          </div>
+
           {MATRIX_ROWS.map((row) => (
-            <div key={row.label} className="cmp-row border-t border-edge py-5">
-              <p className="text-[0.9375rem] leading-snug text-text-hi">{row.label}</p>
-              <div className="mt-3.5 grid grid-cols-3 gap-2">
-                {row.values.map((on, i) => {
-                  const isZ = i === 2;
-                  return (
-                    <div
-                      key={i}
-                      className={`flex items-center gap-2 rounded-md px-2.5 py-2 ${
-                        isZ ? "bg-teal/[0.08]" : "bg-white/[0.025]"
-                      }`}
-                    >
-                      {on ? <Yes zuture={isZ} /> : <No />}
-                      <span
-                        className={`label text-[0.5625rem] ${isZ ? "text-teal" : "text-text-lo"}`}
-                      >
-                        {MATRIX_COLUMNS[i]}
-                      </span>
-                    </div>
-                  );
-                })}
+            <div key={row.label} className="cmp-row border-b border-edge pt-4">
+              <p className="text-[0.9rem] leading-snug text-text-hi">{row.label}</p>
+              <div className="mt-2 grid grid-cols-3">
+                {row.values.map((on, i) => (
+                  <span
+                    key={i}
+                    className={`flex h-10 items-center justify-center ${
+                      i === 2 ? "bg-teal/[0.08]" : ""
+                    }`}
+                  >
+                    <span className="sr-only">
+                      {MATRIX_COLUMNS[i]}: {on ? "Yes" : "No"}
+                    </span>
+                    {on ? <Yes zuture={i === 2} /> : <No />}
+                  </span>
+                ))}
               </div>
             </div>
           ))}

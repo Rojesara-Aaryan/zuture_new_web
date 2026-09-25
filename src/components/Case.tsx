@@ -11,8 +11,12 @@ import SectionLabel from "./ui/SectionLabel";
  *
  * The figure holds still on the left and swaps as the statements scroll past
  * it on the right — so the numbers accumulate into an argument instead of each
- * one wiping the last away. On phones it collapses to a sticky strip above the
- * list, which keeps the same relationship in a single column.
+ * one wiping the last away. On tablets it collapses to a sticky strip above
+ * the list, which keeps the same relationship in a single column.
+ *
+ * Phones get neither. Below 640px the strip sat cramped under the header and
+ * blurred the statements scrolling beneath it, so there each statement simply
+ * leads with its own figure, large and in the brand gradient.
  */
 export default function Case() {
   const root = useRef<HTMLElement>(null);
@@ -48,7 +52,7 @@ export default function Case() {
 
       <div className="grid items-start gap-x-16 gutter pb-24 pt-10 sm:pb-32 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         {/* Sticky figure */}
-        <div className="sticky top-16 z-10 mb-8 border-y border-edge bg-void/85 py-5 backdrop-blur-sm lg:top-24 lg:mb-0 lg:border-0 lg:bg-transparent lg:py-0 lg:backdrop-blur-none">
+        <div className="sticky top-16 z-10 mb-8 border-y border-edge bg-void/85 py-5 backdrop-blur-sm max-sm:hidden lg:top-24 lg:mb-0 lg:border-0 lg:bg-transparent lg:py-0 lg:backdrop-blur-none">
           <div className="flex items-baseline justify-between gap-6 lg:block">
             <p
               key={current.figure}
@@ -99,15 +103,18 @@ export default function Case() {
                  block and its figure held on screen for less scroll than any
                  of the ones before it. The extra room below it keeps the
                  sticky column pinned long enough to read the "0" and lets the
-                 argument land before the next section arrives. */
-              className="border-t border-edge py-12 first:border-t-0 first:pt-0 last:pb-[26vh] sm:py-16 sm:last:pb-[34vh]"
+                 argument land before the next section arrives. Phones have no
+                 sticky figure to hold, so there the room is dropped. */
+              className="border-t border-edge py-12 first:border-t-0 first:pt-0 last:pb-4 sm:py-16 sm:last:pb-[34vh]"
             >
               <p
                 className={`display text-[clamp(1.6rem,3.6vw,3rem)] transition-colors duration-500 ${
                   idx === i ? "text-text-hi" : "text-text-mid"
                 }`}
               >
-                <span className="display-em grad-text lg:hidden">{c.figure} </span>
+                <span className="display-em grad-text lg:hidden max-sm:mb-3 max-sm:block max-sm:text-[clamp(2.75rem,13vw,3.5rem)] max-sm:font-extrabold max-sm:leading-[0.9]">
+                  {c.figure}{" "}
+                </span>
                 {c.lead}
               </p>
               <p className="mt-5 max-w-[52ch] text-[0.9375rem] leading-relaxed text-text-mid">

@@ -104,6 +104,35 @@ A fourth version re-set the paragraph as a rhythm — one word at display scale,
 three times, then a fourth row breaking the pattern — and was reverted. If you
 reach for that idea again, know it has been tried.
 
+### Mobile is its own layout, below 640px
+
+Phones get a deliberately different design, and every part of it sits behind
+Tailwind's `max-sm:` variant (or in a block that is already `sm:hidden`). That
+is a guarantee, not a habit: nothing at 640px or wider can see those classes,
+so the desktop layout cannot move when mobile does. It was checked by
+pixel-diffing all six pages at 1024 and 1440 before and after — 60.9M pixels,
+none changed.
+
+What phones do differently:
+
+- **The case** drops the sticky figure strip. Under the header it was cramped
+  and blurred the statements beneath it, so each statement leads with its own
+  figure instead, large and in the brand gradient.
+- **The comparison table** prints the column names once, in a header pinned
+  under the nav, instead of inside all 36 cells. The Zuture column keeps a
+  tinted lane top to bottom; the names stay in every cell for screen readers.
+- **The footer** and **"True of both"** go to two columns rather than one long
+  stack.
+- **"A first look"** stacks its label over the exposure meter, which otherwise
+  ran together as "…MORE OR LESSEXPOSED".
+- **The /system photo cell** gets its own aspect ratio. It has none on the
+  desktop grid, where `row-span-2` sizes it; in one column it collapsed to 0px
+  and the image disappeared.
+
+**Tablets (640–1023px) were left alone on purpose** and still have two of the
+bugs above: the photo cell is 0px tall, and the case figures run into their
+sentence ("90%OF YOUR LIFE"). Both are one-class fixes when tablet is in scope.
+
 ### The light act
 
 "The system" is the only section that inverts to bone. It is the centre of the

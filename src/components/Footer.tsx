@@ -7,8 +7,8 @@ import { BRAND, CONTACT } from "@/data/site";
 export default function Footer() {
   return (
     <footer className="relative bg-void gutter pb-10 pt-24 sm:pt-32">
-      <div className="grid gap-10 border-t border-edge pt-10 sm:grid-cols-2 lg:grid-cols-5">
-        <div>
+      <div className="grid gap-10 border-t border-edge pt-10 max-sm:grid-cols-2 max-sm:gap-x-6 max-sm:gap-y-9 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="max-sm:col-span-2">
           <Image
             src="/brand/logo-colour.png"
             alt="Zuture"

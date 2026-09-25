@@ -139,11 +139,11 @@ export default function Models() {
         {/* What both do */}
         <div>
           <p className="label border-t border-edge pt-6 text-text-lo">True of both</p>
-          <ul className="spec-list mt-8 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="spec-list mt-8 grid gap-x-10 max-sm:grid-cols-2 max-sm:gap-x-5 sm:grid-cols-2 lg:grid-cols-4">
             {PLATFORM.map(([k, v, note]) => (
-              <li key={k} className="spec-row flex flex-col gap-2 border-t border-edge py-6">
+              <li key={k} className="spec-row flex flex-col gap-2 border-t border-edge py-6 max-sm:py-5">
                 <span className="label text-text-lo">{k}</span>
-                <span className="display text-[clamp(1.1rem,2.2vw,1.6rem)] text-text-hi">{v}</span>
+                <span className="display text-[clamp(1.1rem,2.2vw,1.6rem)] text-text-hi max-sm:text-[1rem]">{v}</span>
                 <span className="text-[0.8125rem] leading-relaxed text-text-mid">{note}</span>
               </li>
             ))}

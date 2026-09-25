@@ -158,7 +158,7 @@ export default function Treatment() {
           ))}
 
           {/* The object itself, as a cell */}
-          <article className="bento-cell relative overflow-hidden rounded-2xl bg-ink sm:col-span-2 lg:col-span-2 lg:row-span-2">
+          <article className="bento-cell relative overflow-hidden rounded-2xl bg-ink max-sm:aspect-[4/3] sm:col-span-2 lg:col-span-2 lg:row-span-2">
             <Image
               src={SHOT.system}
               alt="The Zuture unit"
