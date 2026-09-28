@@ -72,7 +72,7 @@ export default function Treatment() {
             carries its own ink-on-light colours. */}
         <header className="grid gap-y-7 lg:grid-cols-12 lg:gap-x-10">
           <div className="lg:col-span-7">
-            <p className="label flex items-center gap-3 text-ink/45">
+            <p className="label flex items-center gap-3 text-ink/60">
               <span aria-hidden className="grad-rule h-px w-8 shrink-0 sm:w-12" />
               The system
             </p>
@@ -125,14 +125,14 @@ export default function Treatment() {
               <h2 className="display text-[clamp(1.9rem,3.8vw,2.9rem)] text-ink">{filter.verb}</h2>
               <p className="mt-4 text-[0.875rem] leading-relaxed text-ink/60">{filter.body}</p>
             </div>
-            <p className="label mt-8 text-ink/40">{filter.note}</p>
+            <p className="label mt-8 text-ink/60">{filter.note}</p>
           </article>
 
           {/* Where it goes — tall accent cell. Deliberately no dimensions:
               the unit is a prototype and those are not measured yet. */}
           <article className="bento-cell flex flex-col justify-between rounded-2xl bg-ink/[0.045] p-7 lg:col-span-2 lg:row-span-2">
             <div>
-              <p className="label text-ink/40">{SCALE.kicker}</p>
+              <p className="label text-ink/60">{SCALE.kicker}</p>
               <p className="display mt-5 text-[clamp(2.4rem,5vw,3.6rem)] leading-none text-ink">
                 {SCALE.headline}
               </p>
@@ -153,7 +153,7 @@ export default function Treatment() {
                 <h2 className="display text-[clamp(1.9rem,3.8vw,2.9rem)] text-ink">{t.verb}</h2>
                 <p className="mt-4 text-[0.875rem] leading-relaxed text-ink/60">{t.body}</p>
               </div>
-              <p className="label mt-8 text-ink/40">{t.note}</p>
+              <p className="label mt-8 text-ink/60">{t.note}</p>
             </article>
           ))}
 
@@ -175,7 +175,7 @@ export default function Treatment() {
           <article className="bento-cell flex items-center rounded-2xl border border-ink/12 px-7 py-8 sm:col-span-2 lg:col-span-4">
             <p className="display text-[clamp(1.3rem,2.6vw,2rem)] text-ink">
               {SCALE.lead}{" "}
-              <span className="display-em text-ink/50">
+              <span className="display-em text-ink/60">
                 Three plant rooms&rsquo; worth of work, on one wall.
               </span>
             </p>

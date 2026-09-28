@@ -7,6 +7,7 @@ import Link from "next/link";
 import { CONTACT, MODELS, RESERVE, SHOT, SHOT_ALT } from "@/data/site";
 import Reveal from "./ui/Reveal";
 import Magnetic from "./ui/Magnetic";
+import { sendReservation } from "@/lib/reservation";
 
 type Status = "idle" | "sending" | "done" | "error";
 
@@ -55,16 +56,28 @@ export default function Reserve() {
       return;
     }
 
+    // Honeypot: people never see this field; bots fill every field. Show them
+    // success and send nothing, so they learn nothing either.
+    if (String(data.website ?? "").trim()) {
+      setStatus("done");
+      return;
+    }
+
     setStatus("sending");
     try {
-      const res = await fetch("/api/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, model }),
+      await sendReservation({
+        name: String(data.name ?? ""),
+        email: String(data.email ?? ""),
+        phone: String(data.phone ?? ""),
+        model,
+        roomSize: String(data.room_size ?? ""),
+        space: String(data.space ?? ""),
       });
-      setStatus(res.ok ? "done" : "error");
-      if (!res.ok) setError(`That did not go through. Try again, or email ${CONTACT.email}.`);
-    } catch {
+      setStatus("done");
+    } catch (err) {
+      // EmailJS's own reason (bad key, service disconnected, monthly limit,
+      // domain not allowed) — visible in the browser console for diagnosis.
+      console.error("[zuture] reservation not sent:", err);
       setStatus("error");
       setError(`That did not go through. Try again, or email ${CONTACT.email}.`);
     }
@@ -127,7 +140,7 @@ export default function Reserve() {
           ) : (
             <form onSubmit={submit} noValidate className="reserve-form">
               {/* Honeypot. Invisible and unreachable for people; bots fill it
-                  and are quietly dropped by /api/notify. */}
+                  and are quietly dropped in submit() above. */}
               <input
                 type="text"
                 name="website"

@@ -20,6 +20,9 @@
  * ASHRAE 62.1 — that standard sets ventilation rates. And the EPA's "2 to 5
  * times" refers to concentrations of some pollutants, not indoor air overall.
  *
+ * Z-ACTIVE's ozone output is not stated because it has not been measured yet;
+ * when it is, put the figure (and any UL 2998 result) into that answer.
+ *
  * Deliberately left out: installation dimensions (the prototype may change),
  * decibel figures, filter-replacement intervals, and any percentage capture
  * rate for a finished unit.
@@ -128,6 +131,10 @@ export const FAQ: FaqGroup[] = [
         a: "An electrostatic precipitator gives airborne particles an electric charge with a high-voltage field and collects them on oppositely charged plates. Because the plates are cleaned rather than replaced, there is no filter to keep buying. It is the core of Zuture Z-ACTIVE, whose collector plates rinse clean under a tap.",
       },
       {
+        q: "Does Zuture produce ozone?",
+        a: "Ionisers and electrostatic air cleaners can release ozone as a by-product, and ozone irritates the lungs, so it is a fair question to ask of any purifier that uses them. The recognised limits are UL 867, which caps electrostatic air cleaners at 0.05 ppm, and UL 2998, which certifies zero ozone emissions. Zuture Z-PURE filters mechanically, with HEPA and activated carbon, and has no electrostatic or ionising stage. Zuture Z-ACTIVE uses electrostatic precipitation and ionisation; its measured ozone output has not been published yet and, like its other figures, will be once tested.",
+      },
+      {
         q: "How is Zuture different from an ERV?",
         a: "Most energy recovery ventilators (ERVs) are ducted, whole-house systems whose main job is swapping stale indoor air for fresh outdoor air while transferring heat and moisture between the two streams. Zuture is a single-room unit mounted on a wall and fitted through one small opening, and its job is deciding: it compares indoor and outdoor air, chooses between filtered fresh air, recirculation or a CO2 override, checks the dew point, and brings in cooler outdoor air when that helps.",
       },
@@ -193,7 +200,7 @@ export const FAQ: FaqGroup[] = [
       },
       {
         q: "What are Zuture's airflow, CADR and noise figures?",
-        a: "They have not been published yet, deliberately. Zuture is a working prototype, and airflow, coverage, noise, dimensions and certification are being validated now. The figures will be published once they are measured rather than estimated, and people who reserve will receive the full specification first.",
+        a: "They have not been published yet, deliberately. Zuture is a working prototype, and airflow, coverage, noise, ozone output, dimensions and certification are being validated now. The figures will be published once they are measured rather than estimated, and people who reserve will receive the full specification first.",
       },
     ],
   },

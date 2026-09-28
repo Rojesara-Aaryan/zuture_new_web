@@ -8,9 +8,10 @@ const isDev = process.env.NODE_ENV !== "production";
  *
  * Next and the JSON-LD blocks rely on inline scripts, so 'unsafe-inline' stays
  * for scripts and styles; what this policy buys is that nothing loads from, or
- * sends data to, anywhere but this site. There are no third-party scripts,
- * fonts are self-hosted by next/font, and reservations are sent to EmailJS from
- * the server, not the browser. 'unsafe-eval' is only needed by the dev server.
+ * sends data to, anywhere but this site and EmailJS. There are no third-party
+ * scripts, fonts are self-hosted by next/font, and the one outside connection is
+ * the browser posting a reservation to api.emailjs.com. 'unsafe-eval' is only
+ * needed by the dev server.
  */
 const csp = [
   "default-src 'self'",
@@ -18,7 +19,8 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
+  // api.emailjs.com: reservations are sent from the browser (lib/reservation.ts).
+  `connect-src 'self' https://api.emailjs.com${isDev ? " ws: wss:" : ""}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

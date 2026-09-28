@@ -86,7 +86,7 @@ export default function Aperture() {
                 alt={f.alt}
                 fill
                 quality={95}
-                priority={idx === 0}
+                loading={idx === 0 ? "eager" : "lazy"}
                 sizes="100vw"
                 className="object-cover transition-opacity duration-300"
                 style={{ objectPosition: f.pos, opacity: idx === i ? 1 : 0 }}

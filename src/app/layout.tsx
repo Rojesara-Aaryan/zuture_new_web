@@ -73,8 +73,24 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en-IN"
+      // The <head> script below may add `intro-seen` to this element before
+      // React hydrates it. That difference is intended; this silences React's
+      // mismatch warning for this element's attributes only, not its children.
+      suppressHydrationWarning
       className={`${archivo.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Before first paint: has this tab already seen the intro? If so,
+            there will be no overlay, and globals.css keeps reveal targets
+            hidden until their animations run. Wrapped in try because
+            sessionStorage can throw in private or locked-down browsers. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'try{if(sessionStorage.getItem("zuture:intro")==="1")document.documentElement.classList.add("intro-seen")}catch(e){}',
+          }}
+        />
+      </head>
       <body className="min-h-full bg-void text-text-hi">
         {/* Who Zuture is, site-wide: what search and AI engines use to
             recognise the brand as one entity across every page. */}

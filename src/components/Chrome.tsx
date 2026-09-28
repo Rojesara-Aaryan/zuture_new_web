@@ -31,8 +31,6 @@ export default function Chrome({ children }: { children: React.ReactNode }) {
   const lenis = useLenis();
 
   useEffect(() => {
-    document.documentElement.classList.add("anim-ready");
-
     // Pinned sections measure in pixels; late-loading images and webfonts
     // move every boundary underneath them. Re-measure once both have settled.
     const refresh = () => ScrollTrigger.refresh();

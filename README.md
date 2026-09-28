@@ -281,7 +281,7 @@ src/
     (site)/       the four routes above; layout.tsx wraps them in Chrome
     privacy/      outside (site) on purpose — own header, no site chrome
     terms/
-    layout.tsx    html/body + SmoothScroll, globals.css, api/notify
+    layout.tsx    html/body + SmoothScroll, globals.css
   components/
     Chrome.tsx    the persistent shell: intro, header, progress, footer
     ...           one file per section
@@ -314,13 +314,21 @@ rule or the marketing footer.
 
 ## Going live
 
-**Reservations are emailed through EmailJS** (`src/app/api/notify/route.ts`),
-using the same service and product-enquiry template as the live zuture.co form,
-so they land in the same inbox. Set `EMAILJS_SERVICE_ID`, `EMAILJS_TEMPLATE_ID`,
-`EMAILJS_PUBLIC_KEY` and `EMAILJS_PRIVATE_KEY` in Vercel (see `.env.example`),
-and in the EmailJS dashboard enable *Account → Security → Allow EmailJS API for
-non-browser applications*. Until then the form shows an error rather than
-accepting a reservation and dropping it. A hidden honeypot field drops bots.
+**Reservations are emailed from the visitor's browser through EmailJS**
+(`src/lib/reservation.ts`) — exactly how the live zuture.co enquiry form sends,
+with the same service, product-enquiry template and template variables, so they
+land in the same inbox. It needs no setup: the public key, service and template
+IDs are built in (an EmailJS public key is meant to be public; the live site
+ships the same values). `NEXT_PUBLIC_EMAILJS_*` overrides them if they change.
+
+It was first built as a server route, which needed a private key and EmailJS's
+"non-browser applications" switch; with neither set, every reservation showed
+"That did not go through". If a send fails now, EmailJS's own reason is logged
+to the browser console as `[zuture] reservation not sent`, and the visitor is
+told to try again or email. If EmailJS domain restrictions are on (Account →
+Security), every domain the site runs on must be in the allowed list. The
+Content Security Policy allows `https://api.emailjs.com` for this one call. A
+hidden honeypot field drops bots without sending.
 
 **Old zuture.co URLs redirect permanently** (`next.config.ts`): `/home`,
 `/contact`, `/product-inquiry`, `/support-ticket`, `/blog`, `/returns`. They are
@@ -452,9 +460,8 @@ copied. Body text stays selectable; only media is locked.
 
 ## Before going live
 
-1. **Wire up reservations.** `src/app/api/notify/route.ts` validates and logs
-   only — nothing is stored. Point it at the same CRM the live enquiry form on
-   zuture.co uses, or reservations are lost.
+1. **Reservations** are wired to EmailJS (see "Going live"). Send one test
+   reservation after each deploy and confirm it arrives.
 2. **Set a launch date** if you want a countdown. `BRAND.launchWindow` in
    `src/data/site.ts` is a placeholder; the hero currently says "Launching soon"
    rather than committing to a date.

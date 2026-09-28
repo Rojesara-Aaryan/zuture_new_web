@@ -32,7 +32,7 @@ export default function LegalPage({
             src="/brand/logo-colour.png"
             alt="Zuture"
             fill
-            priority
+            loading="eager"
             sizes="120px"
             className="object-contain object-left"
           />

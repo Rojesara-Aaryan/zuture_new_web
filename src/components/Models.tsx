@@ -103,6 +103,9 @@ export default function Models() {
                   src={SHOT.models[m.id]}
                   alt={SHOT_ALT.models[m.id]}
                   fill
+                  /* The first model photo is /models' largest element on load
+                     (Lighthouse LCP), so it is fetched ahead of everything else. */
+                  preload={m.id === "z-active"}
                   quality={95}
                   sizes="(max-width: 1024px) 92vw, 46vw"
                   className="object-cover"

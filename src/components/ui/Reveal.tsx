@@ -90,7 +90,7 @@ export default function Reveal({
   );
 
   return (
-    <Tag ref={ref} data-anim className={className} style={{ visibility: "hidden" }}>
+    <Tag ref={ref} data-anim className={className}>
       {children}
     </Tag>
   );

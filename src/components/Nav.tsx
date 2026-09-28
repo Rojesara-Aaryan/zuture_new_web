@@ -140,7 +140,7 @@ export default function Nav({ start }: { start: boolean }) {
               src="/brand/logo-colour.png"
               alt="Zuture"
               fill
-              priority
+              loading="eager"
               sizes="120px"
               className="logo-light object-contain object-left"
             />

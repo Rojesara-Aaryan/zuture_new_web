@@ -29,7 +29,7 @@ export default function NotFound() {
     <div className="min-h-screen bg-void">
       <header className="gutter flex items-center justify-between border-b border-edge py-5">
         <Link href="/" className="relative block h-[22px] w-[97px] shrink-0" aria-label="Zuture — home">
-          <Image src="/brand/logo-colour.png" alt="Zuture" fill priority sizes="120px" className="object-contain object-left" />
+          <Image src="/brand/logo-colour.png" alt="Zuture" fill loading="eager" sizes="120px" className="object-contain object-left" />
         </Link>
       </header>
 

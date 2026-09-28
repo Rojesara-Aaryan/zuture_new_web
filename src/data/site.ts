@@ -63,15 +63,20 @@ export const CASE = [
   },
   {
     figure: "1,000",
-    lead: "ppm of CO₂ is the limit.",
-    body: "Two people in a closed room cross twice that in under two hours. No purifier ever built can remove CO₂. Only fresh air can.",
-    source: "ASHRAE 62.1",
+    lead: "ppm of CO₂, and a room turns stuffy.",
+    /* The widely used indoor benchmark, not a legal limit. ASHRAE 62.1 sets
+       ventilation rates, not a CO2 cap, so it is not cited as the source. */
+    body: "Outdoor air sits around 420. A closed bedroom with two people asleep passes 1,000 before morning. No filter removes CO₂ — only fresh air does.",
+    source: "Common indoor benchmark",
   },
   {
-    figure: "10–20",
-    lead: "years of off‑gassing.",
-    body: "How long your sofa, mattress and plywood keep releasing VOCs. Furniture alone accounts for roughly 80% of it.",
-    source: "WHO",
+    figure: "10×",
+    lead: "more of many VOCs indoors than out.",
+    /* US EPA: concentrations of many VOCs are consistently higher indoors,
+       up to ten times higher, than outdoors. Replaces "10–20 years of
+       off-gassing" and "~80% from furniture", which could not be sourced. */
+    body: "Furniture, pressed wood, fresh paint, cleaning products and cooking all release them, and a closed room gives them nowhere to go. A particle filter does not catch a gas.",
+    source: "US EPA",
   },
   {
     figure: "0",

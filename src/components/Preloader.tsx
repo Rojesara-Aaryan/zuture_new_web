@@ -25,12 +25,16 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
         // front made StrictMode's second effect pass read it back and skip the
         // intro entirely, so it never ran on a first visit.
         sessionStorage.setItem("zuture:intro", "1");
+        // Pages reached from here on have no overlay over them; see the
+        // "Before JavaScript runs" rules in globals.css.
+        document.documentElement.classList.add("intro-seen");
         document.documentElement.style.overflow = "";
         setGone(true);
         onDone();
       };
 
       if (skip) {
+        document.documentElement.classList.add("intro-seen");
         document.documentElement.style.overflow = "";
         setGone(true);
         onDone();
@@ -96,13 +100,13 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
       ref={root}
       /* pointer-events-none is load-bearing: nothing in here is interactive,
          so even a stuck overlay can never block the page underneath. */
-      className="pointer-events-none fixed inset-0 z-100 flex items-center justify-center overflow-hidden bg-void opacity-0"
+      className="preloader pointer-events-none fixed inset-0 z-100 flex items-center justify-center overflow-hidden bg-void"
     >
       <Image
         src="/shot/unit-void.webp"
         alt=""
         fill
-        priority
+        loading="eager"
         sizes="100vw"
         className="pre-glint object-cover opacity-0"
       />
@@ -125,7 +129,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
         alt="Zuture"
         width={300}
         height={68}
-        priority
+        loading="eager"
         className="pre-logo absolute w-[180px] opacity-0 sm:w-[240px]"
       />
 
@@ -140,7 +144,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
           <span className="label text-text-lo">Zuture</span>
         </div>
         <div className="mt-4 h-px w-full bg-edge">
-          <div className="pre-bar h-full w-full origin-left bg-text-hi" />
+          <div className="pre-bar h-full w-full origin-left scale-x-0 bg-text-hi" />
         </div>
       </div>
     </div>

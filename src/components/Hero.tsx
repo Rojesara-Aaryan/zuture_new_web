@@ -25,7 +25,16 @@ export default function Hero() {
 
   useGSAP(
     () => {
-      if (!start) return;
+      /**
+       * The headline is drawn by the server, so it paints at once — beneath
+       * the intro overlay on a first visit. Before the intro ends, tuck it
+       * away again (still under the overlay, so nobody sees it go) so the
+       * line-by-line reveal below can play when the overlay lifts.
+       */
+      if (!start) {
+        if (!prefersReducedMotion()) gsap.set("[data-hero]", { autoAlpha: 0 });
+        return;
+      }
 
       if (prefersReducedMotion()) {
         gsap.set("[data-hero]", { autoAlpha: 1 });
@@ -146,7 +155,7 @@ export default function Hero() {
               src={SHOT.hero}
               alt={SHOT_ALT.hero}
               fill
-              priority
+              loading="eager"
               quality={95}
               sizes="100vw"
               className="object-cover object-center"
@@ -193,7 +202,7 @@ export default function Hero() {
                 identical everywhere. */}
             <h1
               data-hero
-              className="hero-h1 display max-w-[14ch] text-[clamp(3.4rem,10.5vw,10rem)] text-text-hi opacity-0"
+              className="hero-h1 display max-w-[14ch] text-[clamp(3.4rem,10.5vw,10rem)] text-text-hi"
             >
               We change
               <br />
