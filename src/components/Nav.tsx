@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { useLenis } from "lenis/react";
@@ -104,6 +105,19 @@ export default function Nav({ start }: { start: boolean }) {
     router.push(href);
   };
 
+  /**
+   * The header is built from real links, not buttons, because crawlers only
+   * follow <a href>: with buttons, search engines saw a navigation that led
+   * nowhere. A plain click still goes through go() for the smooth-scroll and
+   * same-page handling above; a modified click (new tab, new window) is left to
+   * the browser, which buttons could never do.
+   */
+  const follow = (href: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    go(href);
+  };
+
   return (
     <>
       <header ref={root} className="fixed inset-x-0 top-0 z-60 gutter py-5 opacity-0">
@@ -116,8 +130,9 @@ export default function Nav({ start }: { start: boolean }) {
           }}
         />
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => go("/")}
+          <Link
+            href="/"
+            onClick={follow("/")}
             aria-label="Zuture — home"
             className="nav-item relative block h-[22px] w-[97px] shrink-0"
           >
@@ -136,34 +151,36 @@ export default function Nav({ start }: { start: boolean }) {
               sizes="120px"
               className="logo-dark absolute inset-0 object-contain object-left"
             />
-          </button>
+          </Link>
 
           <nav className="hidden items-center gap-9 md:flex">
             {NAV.map((n) => {
               const active = pathname === n.href;
               return (
-                <button
+                <Link
                   key={n.href}
-                  onClick={() => go(n.href)}
+                  href={n.href}
+                  onClick={follow(n.href)}
                   aria-current={active ? "page" : undefined}
                   className={`nav-item label transition-colors duration-300 hover:text-(--nav-fg) ${
                     active ? "text-(--nav-fg)" : "chrome-dim"
                   }`}
                 >
                   {n.label}
-                </button>
+                </Link>
               );
             })}
           </nav>
 
           <div className="flex items-center gap-3">
             <Magnetic strength={0.28} className="nav-item hidden sm:block">
-              <button
-                onClick={() => go(RESERVE)}
-                className="label chrome-fg chrome-edge rounded-full border px-5 py-2.5 transition-colors duration-300 hover:bg-fresh hover:text-void hover:border-fresh"
+              <Link
+                href={RESERVE}
+                onClick={follow(RESERVE)}
+                className="label chrome-fg chrome-edge inline-block rounded-full border px-5 py-2.5 transition-colors duration-300 hover:bg-fresh hover:text-void hover:border-fresh"
               >
                 Reserve yours
-              </button>
+              </Link>
             </Magnetic>
 
             <button
@@ -190,12 +207,13 @@ export default function Nav({ start }: { start: boolean }) {
       >
         {[...NAV, { label: "Reserve yours", href: RESERVE }].map((n) => (
           <div key={n.href} className="overflow-hidden py-1.5">
-            <button
-              onClick={() => go(n.href)}
+            <Link
+              href={n.href}
+              onClick={follow(n.href)}
               className="menu-link display block text-left text-[11vw] text-text-hi"
             >
               {n.label}
-            </button>
+            </Link>
           </div>
         ))}
       </div>

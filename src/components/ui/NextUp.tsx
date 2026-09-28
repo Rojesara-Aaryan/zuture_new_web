@@ -42,9 +42,16 @@ export default function NextUp({ from }: { from: string }) {
       <span aria-hidden className="nu-rule grad-rule block h-px w-full origin-left" />
 
       {/* Same opener as the sections: name left, supporting line bottom-right.
-          With the line set under the heading instead, the arrow sat alone at
-          the far right and the whole middle of the row was empty. */}
-      <Link href={next.href} className="group mt-10 grid gap-y-7 lg:grid-cols-12 lg:gap-x-10">
+          With the line under the heading instead, the arrow sat alone at the
+          far right and the middle of the row was empty. The aria-label names
+          the link outright: its text fades in on scroll and is
+          visibility:hidden until then, which left screen readers a link with
+          no name. */}
+      <Link
+        href={next.href}
+        aria-label={`Next: ${next.label}. ${next.line}`}
+        className="group mt-10 grid gap-y-7 lg:grid-cols-12 lg:gap-x-10"
+      >
         <div className="lg:col-span-7">
           <p className="nu-reveal label text-text-lo">Next</p>
           <p className="nu-reveal display mt-4 text-[clamp(2.1rem,6vw,4.6rem)] text-text-hi transition-colors duration-300 group-hover:text-fresh">

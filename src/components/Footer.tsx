@@ -53,6 +53,15 @@ export default function Footer() {
             {CONTACT.phone}
           </a>
           <p className="mt-2 text-xs text-text-lo">{CONTACT.hours}</p>
+          {/* The FAQ's only link on the site, deliberately in the footer: every
+              page links to it, so search engines never treat it as an orphan,
+              and nothing in the designed layout above had to move. */}
+          <Link
+            href="/faq"
+            className="mt-4 block text-sm text-text-mid transition-colors hover:text-text-hi"
+          >
+            Questions &amp; answers
+          </Link>
         </div>
 
         <div>

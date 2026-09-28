@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import Image from "next/image";
 import Link from "next/link";
-import { MODELS, RESERVE, SHOT } from "@/data/site";
+import { CONTACT, MODELS, RESERVE, SHOT, SHOT_ALT } from "@/data/site";
 import Reveal from "./ui/Reveal";
 import Magnetic from "./ui/Magnetic";
 
@@ -57,17 +57,16 @@ export default function Reserve() {
 
     setStatus("sending");
     try {
-      // TODO(zuture): point this at the same CRM the live enquiry form uses.
       const res = await fetch("/api/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, model }),
       });
       setStatus(res.ok ? "done" : "error");
-      if (!res.ok) setError("Something went wrong. Try again, or email us.");
+      if (!res.ok) setError(`That did not go through. Try again, or email ${CONTACT.email}.`);
     } catch {
       setStatus("error");
-      setError("Something went wrong. Try again, or email us.");
+      setError(`That did not go through. Try again, or email ${CONTACT.email}.`);
     }
   }
 
@@ -80,7 +79,9 @@ export default function Reserve() {
       <div aria-hidden className="absolute inset-0">
         <Image
           src={SHOT.reserve}
-          alt=""
+          /* The wrapper is aria-hidden, so screen readers skip this backdrop;
+             the alt is for image search, which still reads it. */
+          alt={SHOT_ALT.reserve}
           fill
           quality={95}
           sizes="100vw"
@@ -125,6 +126,16 @@ export default function Reserve() {
             </div>
           ) : (
             <form onSubmit={submit} noValidate className="reserve-form">
+              {/* Honeypot. Invisible and unreachable for people; bots fill it
+                  and are quietly dropped by /api/notify. */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden
+                className="absolute -left-[9999px] h-px w-px opacity-0"
+              />
               {/* Model */}
               <fieldset className="reserve-field">
                 <legend className="label text-text-lo">Choose a core</legend>

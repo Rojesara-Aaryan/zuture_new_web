@@ -52,7 +52,7 @@ async function desktop(name, { reducedMotion = "no-preference", reload = false }
   // Hit-test the real centre of every nav control rather than fixed pixels,
   // so adding a link never turns this into a false alarm.
   const covered = await page.evaluate(() => {
-    const controls = [...document.querySelectorAll("header button")];
+    const controls = [...document.querySelectorAll("header button, header a")];
     return controls
       .filter((b) => b.offsetParent !== null)
       .map((b) => {
@@ -151,7 +151,7 @@ async function routes() {
   // makes it visible — typing into it before this point would fail.
   await page.click("header >> text=THE SYSTEM", { timeout: 8000 });
   await page.waitForTimeout(2400);
-  await page.click('header button:has-text("RESERVE YOURS")', { timeout: 8000 });
+  await page.click('header a:has-text("RESERVE YOURS")', { timeout: 8000 });
   await page.waitForTimeout(3000);
   const reserveTop = await page.evaluate(() => {
     const el = document.querySelector("#reserve");
@@ -323,6 +323,93 @@ async function caseHold() {
   await browser.close();
 }
 
+/**
+ * What crawlers and answer engines receive, read from the server HTML — not
+ * the hydrated page, because that is what they index.
+ *
+ * Each of these has already broken once without anything looking wrong: three
+ * pages shipped with no <h1>, and setting a per-page canonical silently dropped
+ * the share image from every page. Nothing on screen changes when SEO breaks,
+ * which is exactly why it needs checking.
+ */
+async function seo() {
+  head("seo / aeo / geo");
+  const browser = await chromium.launch();
+  const ctx = await browser.newContext();
+  const get = async (p) => (await ctx.request.get(URL + p)).text();
+
+  for (const route of ["/", "/system", "/models", "/about", "/faq"]) {
+    const html = await get(route);
+    const pick = (re) => (html.match(re) || [])[1] || "";
+    const h1 = (html.match(/<h1[\s>]/g) || []).length;
+    const title = pick(/<title>(.*?)<\/title>/);
+    const desc = pick(/<meta name="description" content="(.*?)"/);
+    const canonical = pick(/<link rel="canonical" href="(.*?)"/);
+    const og = pick(/<meta property="og:image" content="(.*?)"/);
+    const ogAlt = pick(/<meta property="og:image:alt" content="(.*?)"/);
+    const twImg = pick(/<meta name="twitter:image" content="(.*?)"/);
+    const keywords = pick(/<meta name="keywords" content="(.*?)"/);
+    const hreflang = /<link rel="alternate" hrefLang="en-IN"/i.test(html);
+    let ld = [], ldOk = true;
+    for (const [, body] of html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)) {
+      try {
+        const d = JSON.parse(body);
+        ld.push(...(Array.isArray(d) ? d : [d]).map((x) => x["@type"]));
+      } catch {
+        ldOk = false;
+      }
+    }
+    const imgs = html.match(/<img\b[^>]*>/g) || [];
+    const noAlt = imgs.filter((i) => !/\balt="/.test(i)).length;
+    const problems = [];
+    if (h1 !== 1) problems.push(`${h1} h1`);
+    if (!title || title.length > 70) problems.push(`title "${title}"`);
+    if (desc.length < 70 || desc.length > 170) problems.push(`description ${desc.length} chars`);
+    const canonPath = canonical ? new global.URL(canonical).pathname : "(none)";
+    if (canonPath !== route) problems.push(`canonical ${canonical || "missing"}`);
+    if (!og) problems.push("no og:image");
+    // Each page previews as itself when shared, not as the home page.
+    const slug = route === "/" ? "home" : route.slice(1);
+    if (og && !og.endsWith(`/og/${slug}.png`)) problems.push(`og:image is ${og}`);
+    if (og) {
+      const r = await ctx.request.get(URL + new global.URL(og).pathname);
+      if (!r.ok() || !String(r.headers()["content-type"]).includes("image/png")) problems.push("og:image does not load");
+    }
+    if (!ogAlt || !twImg) problems.push("image alt or twitter:image missing");
+    if (keywords.split(",").length < 5) problems.push("keywords missing");
+    if (!hreflang) problems.push("no hreflang");
+    if (!ldOk || !ld.includes("Organization")) problems.push("structured data");
+    if (noAlt) problems.push(`${noAlt} img without alt`);
+    check(`${route} is fully marked up`, problems.length === 0, problems.join(", ") || `h1, title, description, keywords, canonical, hreflang, own og:image, ${ld.join("+")}`);
+  }
+
+  const faq = await get("/faq");
+  const faqLd = JSON.parse([...faq.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)].map((m) => m[1]).find((b) => b.includes("FAQPage")));
+  const qs = (Array.isArray(faqLd) ? faqLd.find((x) => x["@type"] === "FAQPage") : faqLd).mainEntity;
+  // Structured data that does not match what is on the page is ignored, or penalised.
+  // Compare decoded question headings to the schema names, exactly and in order.
+  // (Substring matching broke on an admin question containing double quotes,
+  // which React writes as &quot;.)
+  const decode = (t) =>
+    t.replace(/&quot;/g, '"').replace(/&#x27;|&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+  const headings = [...faq.matchAll(/<h3[^>]*>(.*?)<\/h3>/gs)].map((m) => decode(m[1]).trim());
+  const onPage = qs.length === headings.length && qs.every((q, i) => q.name === headings[i]);
+  check("every FAQ in structured data is visible on the page", onPage && qs.length >= 5, `${qs.length} questions`);
+
+
+  const sitemap = await get("/sitemap.xml");
+  const routes = ["/system", "/models", "/about", "/faq"].filter((r) => sitemap.includes(r + "</loc>"));
+  check("sitemap lists every indexable page", routes.length === 4, routes.join(" "));
+  const images = (sitemap.match(/<image:loc>/g) || []).length;
+  check("sitemap carries the page photographs (image sitemap)", images >= 10, `${images} images`);
+  const robots = await get("/robots.txt");
+  check("robots.txt allows crawling and names the sitemap", /Allow: \//.test(robots) && /Sitemap:/.test(robots));
+  const llms = await get("/llms.txt");
+  check("llms.txt is served for AI engines", llms.startsWith("# Zuture") && llms.includes("## Questions and answers"));
+
+  await browser.close();
+}
+
 async function mobile() {
   head("mobile menu");
   const browser = await chromium.launch();
@@ -370,6 +457,7 @@ await routes();
 await heroRoundTrip();
 await caseHold();
 await mobile();
+await seo();
 
 console.log("");
 console.log(failures === 0 ? "ALL CHECKS PASSED" : failures + " CHECK(S) FAILED");

@@ -56,7 +56,7 @@ export default function About() {
   return (
     <section id="about" ref={root} className="relative bg-void py-24 sm:py-32">
       <div className="gutter">
-        <SectionHead label="Who is building it" heading={ABOUT.mandate} lead={ABOUT.body} />
+        <SectionHead as="h1" label="Who is building it" heading={ABOUT.mandate} lead={ABOUT.body} />
 
         {/* Three across the full width — stacked in one column it left two
             thirds of the row empty next to a very tall heading. */}

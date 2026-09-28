@@ -136,6 +136,27 @@ export const SHOT = {
   },
 } as const;
 
+/**
+ * Alt text for every photograph, keyed exactly like SHOT.
+ *
+ * Written to describe what is actually in the frame — someone using a screen
+ * reader should get the picture, and so should an image search. The product
+ * words ("air treatment unit", "HEPA", "fresh air") appear where they are true
+ * of the image, never as a keyword list. Every shot is of a prototype or a
+ * render, which the Terms say, so the alts do not claim otherwise.
+ */
+export const SHOT_ALT = {
+  hero: "The Zuture intelligent air treatment unit, a brushed-aluminium wall-mounted prototype, backlit by a ring of light against black",
+  case: "Front of the Zuture air treatment unit, showing its indoor air quality display and louvred air intake",
+  blindSpot: "Close-up of the Zuture unit's perforated aluminium air-intake grille wrapping around a rounded corner",
+  system: "Zuture Z-ACTIVE air treatment unit in brushed aluminium, with its front display lit",
+  reserve: "The Zuture air treatment unit standing in a shaft of light",
+  models: {
+    "z-active": "Zuture Z-ACTIVE, the fresh-air ventilation and electrostatic (ESP) purification edition, on a reflective floor",
+    "z-pure": "Zuture Z-PURE, the HEPA H13 air purification edition, side-lit in darkness",
+  },
+} as const;
+
 /* ------------------------------------------------------------------
    THE APERTURE — fragments of the product, one at a time.
    ------------------------------------------------------------------ */
@@ -143,24 +164,28 @@ export const FRAGMENTS = [
   {
     src: "/shot/corner-top.webp",
     caption: "The crown",
+    alt: "Top of the Zuture unit: one folded aluminium shell with the air intake cut into it",
     note: "One folded shell. The intake is cut into it, not bolted onto it.",
     pos: "50% 45%",
   },
   {
     src: "/shot/grille-chevron.webp",
     caption: "The fold",
+    alt: "The Zuture unit’s louvre array folding around a corner without a seam or joining strip",
     note: "The louvre array turns the corner without a seam or a joining strip.",
     pos: "50% 50%",
   },
   {
     src: "/shot/grille-corner.webp",
     caption: "The intake",
+    alt: "Angled extruded-aluminium intake louvres on the Zuture air treatment unit",
     note: "Extruded aluminium louvres. Angled, so throw direction needs no diffuser.",
     pos: "45% 50%",
   },
   {
     src: "/shot/panel.webp",
     caption: "The readout",
+    alt: "Built-in display on the Zuture unit showing indoor and outdoor air quality side by side",
     note: "Indoor and outdoor, side by side, on the unit itself — not only in the app.",
     pos: "55% 50%",
   },

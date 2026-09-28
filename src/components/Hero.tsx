@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import { useLenis } from "lenis/react";
 import { gsap, useGSAP, SplitText, prefersReducedMotion } from "@/lib/gsap";
-import { BRAND, SHOT } from "@/data/site";
+import { BRAND, SHOT, SHOT_ALT } from "@/data/site";
 import { useReady } from "./Chrome";
 
 /**
@@ -144,7 +144,7 @@ export default function Hero() {
           <div className="hero-glint absolute inset-0 opacity-0 motion-reduce:opacity-100">
             <Image
               src={SHOT.hero}
-              alt="The Zuture unit, backlit"
+              alt={SHOT_ALT.hero}
               fill
               priority
               quality={95}

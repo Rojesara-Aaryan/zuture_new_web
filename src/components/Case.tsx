@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useGSAP, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 import Image from "next/image";
-import { CASE, SHOT } from "@/data/site";
+import { CASE, SHOT, SHOT_ALT } from "@/data/site";
 import SectionLabel from "./ui/SectionLabel";
 
 /**
@@ -11,12 +11,12 @@ import SectionLabel from "./ui/SectionLabel";
  *
  * The figure holds still on the left and swaps as the statements scroll past
  * it on the right — so the numbers accumulate into an argument instead of each
- * one wiping the last away. On tablets it collapses to a sticky strip above
- * the list, which keeps the same relationship in a single column.
+ * one wiping the last away.
  *
- * Phones get neither. Below 640px the strip sat cramped under the header and
- * blurred the statements scrolling beneath it, so there each statement simply
- * leads with its own figure, large and in the brand gradient.
+ * Below 1024px there is no sticky figure at all. In one column it became a strip
+ * cramped under the header that blurred the statements scrolling beneath it and
+ * repeated a number each statement already carries — so on phones and tablets
+ * every statement simply leads with its own figure, large and in the gradient.
  */
 export default function Case() {
   const root = useRef<HTMLElement>(null);
@@ -52,7 +52,7 @@ export default function Case() {
 
       <div className="grid items-start gap-x-16 gutter pb-24 pt-10 sm:pb-32 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         {/* Sticky figure */}
-        <div className="sticky top-16 z-10 mb-8 border-y border-edge bg-void/85 py-5 backdrop-blur-sm max-sm:hidden lg:top-24 lg:mb-0 lg:border-0 lg:bg-transparent lg:py-0 lg:backdrop-blur-none">
+        <div className="sticky top-16 z-10 mb-8 border-y border-edge bg-void/85 py-5 backdrop-blur-sm max-lg:hidden lg:top-24 lg:mb-0 lg:border-0 lg:bg-transparent lg:py-0 lg:backdrop-blur-none">
           <div className="flex items-baseline justify-between gap-6 lg:block">
             <p
               key={current.figure}
@@ -71,7 +71,7 @@ export default function Case() {
           <div className="relative mt-9 hidden aspect-square w-full max-w-[17rem] overflow-hidden rounded-xl lg:block">
             <Image
               src={SHOT.case}
-              alt="The Zuture unit"
+              alt={SHOT_ALT.case}
               fill
               quality={95}
               sizes="(max-width: 1024px) 1px, 18rem"
@@ -103,16 +103,16 @@ export default function Case() {
                  block and its figure held on screen for less scroll than any
                  of the ones before it. The extra room below it keeps the
                  sticky column pinned long enough to read the "0" and lets the
-                 argument land before the next section arrives. Phones have no
-                 sticky figure to hold, so there the room is dropped. */
-              className="border-t border-edge py-12 first:border-t-0 first:pt-0 last:pb-4 sm:py-16 sm:last:pb-[34vh]"
+                 argument land before the next section arrives. Below 1024px there
+                 is no sticky figure to hold, so the room is dropped there. */
+              className="border-t border-edge py-12 first:border-t-0 first:pt-0 last:pb-4 sm:py-16 lg:last:pb-[34vh]"
             >
               <p
                 className={`display text-[clamp(1.6rem,3.6vw,3rem)] transition-colors duration-500 ${
                   idx === i ? "text-text-hi" : "text-text-mid"
                 }`}
               >
-                <span className="display-em grad-text lg:hidden max-sm:mb-3 max-sm:block max-sm:text-[clamp(2.75rem,13vw,3.5rem)] max-sm:font-extrabold max-sm:leading-[0.9]">
+                <span className="display-em grad-text lg:hidden max-lg:mb-3 max-lg:block max-lg:text-[clamp(2.75rem,13vw,4.5rem)] max-lg:font-extrabold max-lg:leading-[0.9]">
                   {c.figure}{" "}
                 </span>
                 {c.lead}

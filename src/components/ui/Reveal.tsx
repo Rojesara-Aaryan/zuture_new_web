@@ -51,6 +51,11 @@ export default function Reveal({
           type: split,
           // Only lines get the clipping mask; masking words would box each one.
           mask: split === "lines" ? "lines" : undefined,
+          // SplitText's default puts an aria-label on the split element, which
+          // is invalid on a <p> or <div> (Lighthouse: "prohibited ARIA"). Lines
+          // and words keep the text whole and in order, so screen readers can
+          // simply read it; only a character split needs the label.
+          aria: split === "chars" ? "auto" : "none",
         });
 
         const targets =

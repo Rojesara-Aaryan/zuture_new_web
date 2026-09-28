@@ -20,18 +20,21 @@ export default function SectionHead({
   lead,
   headingClass = "text-[clamp(2.1rem,5.6vw,4.4rem)] text-text-hi",
   className = "",
+  as = "h2",
 }: {
   label: string;
   heading: React.ReactNode;
   lead?: React.ReactNode;
   headingClass?: string;
   className?: string;
+  /** h1 when this opens the page — every page needs exactly one. */
+  as?: "h1" | "h2";
 }) {
   return (
     <div className={`grid gap-y-7 lg:grid-cols-12 lg:gap-x-10 ${className}`}>
       <div className="lg:col-span-7">
         <SectionLabel>{label}</SectionLabel>
-        <Reveal as="h2" className={`display mt-7 ${headingClass}`}>
+        <Reveal as={as} className={`display mt-7 ${headingClass}`}>
           {heading}
         </Reveal>
       </div>

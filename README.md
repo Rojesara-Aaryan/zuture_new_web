@@ -104,34 +104,37 @@ A fourth version re-set the paragraph as a rhythm — one word at display scale,
 three times, then a fourth row breaking the pattern — and was reverted. If you
 reach for that idea again, know it has been tried.
 
-### Mobile is its own layout, below 640px
+### Phones and tablets have their own layouts
 
-Phones get a deliberately different design, and every part of it sits behind
-Tailwind's `max-sm:` variant (or in a block that is already `sm:hidden`). That
-is a guarantee, not a habit: nothing at 640px or wider can see those classes,
-so the desktop layout cannot move when mobile does. It was checked by
-pixel-diffing all six pages at 1024 and 1440 before and after — 60.9M pixels,
-none changed.
+Below 1024px the site is deliberately redesigned rather than squeezed. Every
+rule for it sits behind a variant that cannot reach desktop — `max-sm:` for
+phones, `sm:max-lg:` / `max-lg:` for tablets — or uses `md:` only to set the
+value desktop already has. That is checked, not assumed: all six pages are
+pixel-diffed at 1024 and 1440 before and after, with animations frozen so two
+captures of unchanged code match exactly.
 
-What phones do differently:
+Phones (below 640px):
 
-- **The case** drops the sticky figure strip. Under the header it was cramped
-  and blurred the statements beneath it, so each statement leads with its own
-  figure instead, large and in the brand gradient.
 - **The comparison table** prints the column names once, in a header pinned
   under the nav, instead of inside all 36 cells. The Zuture column keeps a
-  tinted lane top to bottom; the names stay in every cell for screen readers.
-- **The footer** and **"True of both"** go to two columns rather than one long
-  stack.
+  tinted lane; the names stay in every cell for screen readers.
+- **The footer** and **"True of both"** go to two columns.
 - **"A first look"** stacks its label over the exposure meter, which otherwise
   ran together as "…MORE OR LESSEXPOSED".
-- **The /system photo cell** gets its own aspect ratio. It has none on the
-  desktop grid, where `row-span-2` sizes it; in one column it collapsed to 0px
-  and the image disappeared.
 
-**Tablets (640–1023px) were left alone on purpose** and still have two of the
-bugs above: the photo cell is 0px tall, and the case figures run into their
-sentence ("90%OF YOUR LIFE"). Both are one-class fixes when tablet is in scope.
+Phones and tablets (below 1024px):
+
+- **The case** has no sticky figure strip — in one column it sat cramped under
+  the header and blurred the statements beneath it. Each statement leads with
+  its own figure instead, large and in the brand gradient. (As an inline-block
+  the figure also swallowed its trailing space: "90%OF YOUR LIFE".)
+- **The /system photo cell** gets an aspect ratio of its own. On desktop
+  `row-span-2` sizes it; in fewer columns it collapsed to 0px and vanished.
+
+Tablets from 768px:
+
+- **The blind spot**, **the two models** and **the two air-path lanes** sit
+  side by side, as on desktop, instead of stacking into one long column.
 
 ### The light act
 
@@ -308,6 +311,104 @@ resolved there too, once the new page has mounted.
 **The policy pages sit outside the `(site)` group deliberately.** They carry
 their own stripped-back header and must not inherit the intro, the progress
 rule or the marketing footer.
+
+## Going live
+
+**Reservations are emailed through EmailJS** (`src/app/api/notify/route.ts`),
+using the same service and product-enquiry template as the live zuture.co form,
+so they land in the same inbox. Set `EMAILJS_SERVICE_ID`, `EMAILJS_TEMPLATE_ID`,
+`EMAILJS_PUBLIC_KEY` and `EMAILJS_PRIVATE_KEY` in Vercel (see `.env.example`),
+and in the EmailJS dashboard enable *Account → Security → Allow EmailJS API for
+non-browser applications*. Until then the form shows an error rather than
+accepting a reservation and dropping it. A hidden honeypot field drops bots.
+
+**Old zuture.co URLs redirect permanently** (`next.config.ts`): `/home`,
+`/contact`, `/product-inquiry`, `/support-ticket`, `/blog`, `/returns`. They are
+in the old site's sitemap, so without redirects their rankings would be lost
+as 404s. A branded 404 catches anything else.
+
+**Security headers** are set for every route: a Content Security Policy that
+allows nothing off-site, HSTS (matching the live site), nosniff, frame denial,
+a strict referrer policy and a locked-down permissions policy.
+
+**The header navigation is real links**, not buttons. Crawlers only follow
+`<a href>`; with buttons, search engines saw a header that linked nowhere.
+Plain clicks still smooth-scroll; ctrl/cmd-click opens a new tab.
+
+Lighthouse (mobile, production build): SEO 100 and Best Practices 100 on every
+page, Accessibility 96. The remaining accessibility item is the contrast of the
+small grey labels (`--color-text-lo`, about 3.1:1 against the 4.5:1 minimum).
+Mobile LCP is 3.6–3.9s because headings are hidden in the HTML until their
+reveal animations run; the preloader itself adds only about 0.1s.
+
+## Search, answer engines and AI (SEO, AEO, GEO)
+
+Everything lives in `src/lib/seo.ts`, and it follows the copy's rule: **nothing
+in metadata or structured data claims more than the pages do.** There is no
+price, rating, review, certification or performance figure in any of it,
+because none exists yet. A fabricated `aggregateRating` is what gets a site
+penalised, and an AI answer quoting an invented number is worse than none.
+
+**Set `NEXT_PUBLIC_SITE_URL` in Vercel once the domain is final** (for example
+`https://zuture.co`). Until then canonicals, the sitemap and share images use
+Vercel's production hostname automatically, so nothing points at a domain
+still running the old site.
+
+| Layer | What is there |
+| --- | --- |
+| SEO | A unique title, description and canonical on every page; one `<h1>` per page (three pages had none); `lang="en-IN"`; `sitemap.xml`; `robots.txt`; a web manifest; descriptive alt text on every photograph, kept beside its path in `SHOT_ALT` |
+| Structured data | `Organization` and `WebSite` site-wide; a `Product` per edition on /models; `FAQPage` on /faq; `BreadcrumbList` on inner pages |
+| AEO | `/faq`: 28 static questions (below). Native `<details>`, so every answer is in the server HTML, and `FAQPage` structured data is built from the same rows |
+| GEO (generative engines) | `/llms.txt`, a plain-text summary generated from the same data as the pages; AI crawlers allowed by name in robots.txt; one definition sentence reused verbatim everywhere so engines learn one phrasing |
+| GEO (geography) | `en-IN`, `geo.region` IN-GJ, `areaServed` India, full Ahmedabad postal address in `Organization` |
+| Sharing | A share image per page in `public/og/`, with its own alt text |
+
+### The FAQ is static, and written to be quoted
+
+`/faq`, its `FAQPage` structured data and `/llms.txt` all render from
+`src/data/faq.ts` — 28 questions in five groups. It was briefly fed by the
+admin FAQ API the live site uses, and moved back to static so every answer
+could be checked; the header of that file sets out the rules. In short:
+questions phrased the way people search, answers that open with a sentence
+that stands on its own, no unmeasured figure stated as a result, and general
+air-quality facts stated the way their sources state them.
+
+Two corrections worth knowing, because the home page still says otherwise:
+**1,000 ppm of CO2 is a widely used benchmark, not a limit set by ASHRAE 62.1**
+(that standard sets ventilation rates), and the FAQ does not repeat "10–20
+years of off-gassing" or "furniture accounts for ~80%", which could not be
+sourced.
+
+### Every page's metadata comes from one table
+
+`PAGE_SEO` in `src/lib/seo.ts` holds each page's title, description,
+keywords and share image; `pageMeta()` turns a row into canonical, hreflang
+(`en-IN` and `x-default`), Open Graph and Twitter tags. Each page has its own
+1200×630 share image in `public/og/`, rendered from the real fonts and
+photography by `node .tools/og.mjs` — rerun it after changing a headline.
+`public/og.png` is the site-wide default for pages without their own.
+
+The sitemap is an **image sitemap**: each page lists the photographs it shows,
+which is how Google Images ties them to the page.
+
+Three things that broke silently while building this, and are now covered by
+the smoke suite's `seo()` checks:
+
+- **Per-page `openGraph` drops the share image.** Next merges metadata
+  shallowly; a page that sets `openGraph` (every page must, for its canonical)
+  replaces the layout's, including a file-based `opengraph-image`. The image is
+  therefore declared explicitly (`OG_IMAGE`) in every page's metadata.
+- **A root canonical is inherited by every page**, telling search engines each
+  one is a copy of the home page. `pageMeta()` sets one per page.
+- **FAQ structured data must match the visible text** or it is ignored. Both
+  render from `src/data/faq.ts`, and the suite checks they agree.
+
+The keyword list is in `KEYWORDS`. It pairs the category Zuture is defining
+("intelligent air treatment system") with what buyers in India actually type
+("air purifier for home", "fresh air system", "reduce CO2 at home"), framed as
+comparison rather than a claim that Zuture is merely a purifier. The visible
+copy on the existing pages was left unchanged; new language went into the FAQ,
+metadata, structured data, alt text and llms.txt.
 
 ## Legal pages and media protection
 

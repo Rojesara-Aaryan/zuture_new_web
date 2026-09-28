@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
-import { BRAND, SHOT } from "@/data/site";
+import { BRAND, SHOT, SHOT_ALT } from "@/data/site";
 import Reveal from "./ui/Reveal";
 
 /**
@@ -47,13 +47,13 @@ export default function BlindSpot() {
 
   return (
     <section id="difference" ref={root} className="relative bg-void">
-      <div className="grid lg:grid-cols-2">
+      <div className="grid md:grid-cols-2">
         {/* The panel. No scrim over the image — it carries no text, so it has
             nothing to protect and every reason to be seen properly. */}
-        <div className="relative min-h-[46svh] w-full overflow-hidden lg:min-h-[86svh]">
+        <div className="relative min-h-[46svh] w-full overflow-hidden md:min-h-[72svh] lg:min-h-[86svh]">
           <Image
             src={SHOT.blindSpot}
-            alt="The intake grille of the Zuture unit, close up"
+            alt={SHOT_ALT.blindSpot}
             fill
             quality={95}
             sizes="(max-width: 1024px) 100vw, 50vw"
@@ -63,11 +63,11 @@ export default function BlindSpot() {
               Side by side that edge is vertical; stacked it is horizontal. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 hidden bg-linear-to-r from-transparent from-72% to-void/75 lg:block"
+            className="pointer-events-none absolute inset-0 hidden bg-linear-to-r from-transparent from-72% to-void/75 md:block"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 bg-linear-to-t from-void via-transparent to-transparent lg:hidden"
+            className="pointer-events-none absolute inset-0 bg-linear-to-t from-void via-transparent to-transparent md:hidden"
           />
         </div>
 
@@ -105,10 +105,10 @@ export default function BlindSpot() {
            * "Zuture's patented technology" and then restarted at cyan on
            * "does.". A plain fade leaves the span whole.
            *
-           * The measure is 38ch rather than 30 so the turn fits on one line.
-           * background-clip paints across the whole box, so a phrase that wraps
-           * shows the full ramp on the long line and only its cyan start on the
-           * short one — which reads as a mistake rather than a gradient.
+           * The turn uses grad-text-run rather than grad-text: it sits inside
+           * running text and wraps on narrow screens, and that utility gives
+           * every line fragment its own full ramp instead of one ramp across a
+           * box — which left a short final line showing only the cyan start.
            */}
           <figure className="bs-quote mt-12 border-t border-edge pt-10 opacity-0 motion-reduce:opacity-100">
             <blockquote className="display-em max-w-[38ch] text-[clamp(1.15rem,1.95vw,1.65rem)] text-text-hi">

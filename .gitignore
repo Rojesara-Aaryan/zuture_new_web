@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -44,3 +45,6 @@ next-env.d.ts
 # Not used at runtime — only by scripts/prep-images.mjs, which is run by hand.
 # Back this folder up somewhere other than git.
 /DATA/
+
+# local verification tooling
+/.tools/

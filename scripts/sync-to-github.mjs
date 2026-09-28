@@ -61,16 +61,23 @@ for (const rel of files) {
 }
 
 /**
- * Remove files the clone still tracks but this project no longer has.
+ * Remove files the clone has that this project no longer has.
  *
- * Only ever tracked files. An earlier version walked the whole directory and
- * deleted anything not in the source list, which meant it wiped the clone's
- * node_modules and .next — thousands of files — every time it ran. Asking git
- * what it tracks keeps this to the handful of files a rename or a deletion
- * actually orphans, and leaves everything ignored alone.
+ * Asks git rather than walking the directory. An earlier version walked it and
+ * deleted anything not in the source list, which wiped the clone's node_modules
+ * and .next — thousands of files — every run. Git's lists never include ignored
+ * paths, so those are left alone.
+ *
+ * Both tracked files and untracked-but-not-ignored ones are checked: a file
+ * copied by an earlier sync and then deleted here before anyone committed would
+ * otherwise linger in the clone and get pushed.
  */
 const keep = new Set(files.map((f) => f.split(path.sep).join("/")));
-const tracked = execFileSync("git", ["ls-files"], { cwd: DEST, encoding: "utf8" })
+const tracked = execFileSync(
+  "git",
+  ["ls-files", "--cached", "--others", "--exclude-standard"],
+  { cwd: DEST, encoding: "utf8" },
+)
   .split("\n")
   .filter(Boolean);
 

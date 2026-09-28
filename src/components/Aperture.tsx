@@ -83,7 +83,7 @@ export default function Aperture() {
               <Image
                 key={f.src}
                 src={f.src}
-                alt={f.caption}
+                alt={f.alt}
                 fill
                 quality={95}
                 priority={idx === 0}
@@ -120,7 +120,7 @@ export default function Aperture() {
                 <div className="relative aspect-[16/7] w-full overflow-hidden">
                   <Image
                     src={f.src}
-                    alt={f.caption}
+                    alt={f.alt}
                     fill
                     quality={95}
                     sizes="92vw"

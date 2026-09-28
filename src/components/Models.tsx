@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
-import { MODELS, MODELS_LEAD, PLATFORM, SHOT } from "@/data/site";
+import { MODELS, MODELS_LEAD, PLATFORM, SHOT, SHOT_ALT } from "@/data/site";
 import SectionHead from "./ui/SectionHead";
 
 const ACCENT = { fresh: "#36cc00", recirc: "#00c8ff" } as const;
@@ -66,6 +66,7 @@ export default function Models() {
     <section id="models" ref={root} className="relative bg-void">
       <div className="gutter pt-24 sm:pt-32">
         <SectionHead
+          as="h1"
           label="Two of them"
           heading={
             <>
@@ -78,10 +79,10 @@ export default function Models() {
       </div>
 
       {/* The pair */}
-      <div className="split relative mt-14 grid sm:mt-20 lg:grid-cols-2">
+      <div className="split relative mt-14 grid sm:mt-20 md:grid-cols-2">
         <span
           aria-hidden
-          className="split-rule absolute inset-y-0 left-1/2 hidden w-px origin-top bg-edge-bright lg:block"
+          className="split-rule absolute inset-y-0 left-1/2 hidden w-px origin-top bg-edge-bright md:block"
         />
 
         {MODELS.map((m) => {
@@ -89,7 +90,7 @@ export default function Models() {
           return (
             <article
               key={m.id}
-              className="model relative flex flex-col overflow-hidden border-t border-edge px-[max(1.25rem,4.5vw)] py-14 sm:py-20 lg:border-t-0"
+              className="model relative flex flex-col overflow-hidden border-t border-edge px-[max(1.25rem,4.5vw)] py-14 sm:py-20 md:border-t-0"
             >
               <div
                 aria-hidden
@@ -100,7 +101,7 @@ export default function Models() {
               <div className="relative mb-12 aspect-16/10 w-full overflow-hidden rounded-xl">
                 <Image
                   src={SHOT.models[m.id]}
-                  alt={`${m.name} unit`}
+                  alt={SHOT_ALT.models[m.id]}
                   fill
                   quality={95}
                   sizes="(max-width: 1024px) 92vw, 46vw"
@@ -111,9 +112,9 @@ export default function Models() {
 
               <div className="relative">
                 <p className="label text-text-lo">{m.edition}</p>
-                <h3 className="display mt-4 text-[clamp(2.4rem,5.8vw,4.2rem)]" style={{ color: c }}>
+                <h2 className="display mt-4 text-[clamp(2.4rem,5.8vw,4.2rem)]" style={{ color: c }}>
                   {m.name}
-                </h3>
+                </h2>
                 <p className="display-em mt-4 text-[clamp(1.2rem,2.4vw,1.8rem)] text-text-hi">
                   {m.line}
                 </p>

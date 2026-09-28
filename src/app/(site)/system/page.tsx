@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbLd, PAGE_SEO, pageMeta } from "@/lib/seo";
 import Treatment from "@/components/Treatment";
 import AirPath from "@/components/AirPath";
 import Advantage from "@/components/Advantage";
 import NextUp from "@/components/ui/NextUp";
 
-export const metadata: Metadata = {
-  title: "The system — Zuture",
-  description:
-    "Filter, replace, condition, decide. How one wall-mounted unit treats the air in a room, the path the air takes through it, and how that compares with a purifier or with ventilation.",
-};
+export const metadata: Metadata = pageMeta(PAGE_SEO.system);
 
 export default function Page() {
   return (
     <>
+      <JsonLd data={breadcrumbLd([{ name: "The system", path: "/system" }])} />
       <Treatment />
       <AirPath />
       <Advantage />

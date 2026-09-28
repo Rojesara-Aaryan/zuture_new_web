@@ -73,7 +73,7 @@ export default function AirPath() {
           takes out.
         </p>
 
-        <div className="mt-14 grid gap-16 sm:mt-20 lg:grid-cols-2 lg:gap-14">
+        <div className="mt-14 grid gap-16 sm:mt-20 md:grid-cols-2 md:gap-10 lg:gap-14">
           {PATH.map((lane) => {
             const c = ACCENT[lane.accent];
             return (
@@ -158,7 +158,7 @@ export default function AirPath() {
         </div>
 
         {/* Said where a reader goes looking for a spec sheet */}
-        <div className="mt-20 grid gap-8 border-t border-edge pt-10 sm:mt-24 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)] lg:gap-16">
+        <div className="mt-20 grid gap-8 border-t border-edge pt-10 sm:mt-24 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)] md:gap-10 lg:gap-16">
           <div>
             <p className="label text-teal">{DEVELOPMENT.label}</p>
             <h3 className="display mt-4 text-[clamp(1.4rem,3vw,2.2rem)] text-text-hi">

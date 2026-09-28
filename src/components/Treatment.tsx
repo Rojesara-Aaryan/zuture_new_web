@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 import Image from "next/image";
-import { TREATMENT, SCALE, SHOT } from "@/data/site";
+import { TREATMENT, SCALE, SHOT, SHOT_ALT } from "@/data/site";
 import Reveal from "./ui/Reveal";
 
 /**
@@ -76,7 +76,7 @@ export default function Treatment() {
               <span aria-hidden className="grad-rule h-px w-8 shrink-0 sm:w-12" />
               The system
             </p>
-            <Reveal as="h2" className="display mt-7 text-[clamp(2rem,5vw,3.75rem)] text-ink">
+            <Reveal as="h1" className="display mt-7 text-[clamp(2rem,5vw,3.75rem)] text-ink">
               Not a purifier.
               <br />
               <span className="display-em">An intelligent air treatment system.</span>
@@ -110,9 +110,9 @@ export default function Treatment() {
             />
             <div className="relative">
               <p className="label text-bone/45">{decide.note}</p>
-              <h3 className="display grad-text mt-5 text-[clamp(2.5rem,6.4vw,5rem)]">
+              <h2 className="display grad-text mt-5 text-[clamp(2.5rem,6.4vw,5rem)]">
                 {decide.verb}
-              </h3>
+              </h2>
             </div>
             <p className="relative mt-10 max-w-[46ch] text-[0.9375rem] leading-relaxed text-bone/70 sm:text-base">
               {decide.body}
@@ -122,7 +122,7 @@ export default function Treatment() {
           {/* Filter */}
           <article className="bento-cell flex flex-col justify-between rounded-2xl border border-ink/12 p-7 lg:col-span-2">
             <div>
-              <h3 className="display text-[clamp(1.9rem,3.8vw,2.9rem)] text-ink">{filter.verb}</h3>
+              <h2 className="display text-[clamp(1.9rem,3.8vw,2.9rem)] text-ink">{filter.verb}</h2>
               <p className="mt-4 text-[0.875rem] leading-relaxed text-ink/60">{filter.body}</p>
             </div>
             <p className="label mt-8 text-ink/40">{filter.note}</p>
@@ -150,7 +150,7 @@ export default function Treatment() {
               className="bento-cell flex flex-col justify-between rounded-2xl border border-ink/12 p-7 lg:col-span-2"
             >
               <div>
-                <h3 className="display text-[clamp(1.9rem,3.8vw,2.9rem)] text-ink">{t.verb}</h3>
+                <h2 className="display text-[clamp(1.9rem,3.8vw,2.9rem)] text-ink">{t.verb}</h2>
                 <p className="mt-4 text-[0.875rem] leading-relaxed text-ink/60">{t.body}</p>
               </div>
               <p className="label mt-8 text-ink/40">{t.note}</p>
@@ -158,10 +158,10 @@ export default function Treatment() {
           ))}
 
           {/* The object itself, as a cell */}
-          <article className="bento-cell relative overflow-hidden rounded-2xl bg-ink max-sm:aspect-[4/3] sm:col-span-2 lg:col-span-2 lg:row-span-2">
+          <article className="bento-cell relative overflow-hidden rounded-2xl bg-ink max-sm:aspect-[4/3] sm:max-lg:aspect-[16/9] sm:col-span-2 lg:col-span-2 lg:row-span-2">
             <Image
               src={SHOT.system}
-              alt="The Zuture unit"
+              alt={SHOT_ALT.system}
               fill
               quality={95}
               sizes="(max-width: 1024px) 92vw, 32vw"
