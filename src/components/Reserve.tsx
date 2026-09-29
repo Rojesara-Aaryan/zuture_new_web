@@ -4,12 +4,14 @@ import { useRef, useState } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CONTACT, MODELS, RESERVE, SHOT, SHOT_ALT } from "@/data/site";
 import Reveal from "./ui/Reveal";
 import Magnetic from "./ui/Magnetic";
 import { sendReservation } from "@/lib/reservation";
+import { WITHDRAW_MAILTO } from "@/data/legal";
 
-type Status = "idle" | "sending" | "done" | "error";
+type Status = "idle" | "sending" | "error";
 
 const ACCENT = { fresh: "#36cc00", recirc: "#00c8ff" } as const;
 
@@ -19,6 +21,11 @@ export default function Reserve() {
   const [model, setModel] = useState<(typeof MODELS)[number]["id"]>(MODELS[0].id);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  const router = useRouter();
+  /* A completed reservation lands on its own page: analytics can count it,
+     and a refresh cannot resubmit the form. The button stays on "Reserving…"
+     until the new page replaces this one. */
+  const done = () => router.push(`/thank-you?core=${model}`);
 
   const chosen = MODELS.find((m) => m.id === model) ?? MODELS[0];
   const accent = ACCENT[chosen.accent];
@@ -59,7 +66,8 @@ export default function Reserve() {
     // Honeypot: people never see this field; bots fill every field. Show them
     // success and send nothing, so they learn nothing either.
     if (String(data.website ?? "").trim()) {
-      setStatus("done");
+      setStatus("sending");
+      done();
       return;
     }
 
@@ -73,7 +81,7 @@ export default function Reserve() {
         roomSize: String(data.room_size ?? ""),
         space: String(data.space ?? ""),
       });
-      setStatus("done");
+      done();
     } catch (err) {
       // EmailJS's own reason (bad key, service disconnected, monthly limit,
       // domain not allowed) — visible in the browser console for diagnosis.
@@ -127,120 +135,114 @@ export default function Reserve() {
             <p className="label mt-8 text-teal">{RESERVE.note}</p>
           </div>
 
-          {status === "done" ? (
-            <div role="status" className="border-t-2 pt-8" style={{ borderColor: accent }}>
-              <p className="display text-[clamp(1.35rem,2.6vw,2.1rem)]" style={{ color: accent }}>
-                Reserved.
+          <form onSubmit={submit} noValidate className="reserve-form">
+            {/* Honeypot. Invisible and unreachable for people; bots fill it
+                and are quietly dropped in submit() above. */}
+            <input
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden
+              className="absolute -left-[9999px] h-px w-px opacity-0"
+            />
+            {/* Model */}
+            <fieldset className="reserve-field">
+              <legend className="label text-text-lo">Choose a core</legend>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                {MODELS.map((m) => {
+                  const on = m.id === model;
+                  const c = ACCENT[m.accent];
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setModel(m.id)}
+                      aria-pressed={on}
+                      className="flex flex-col items-start rounded-lg border p-4 text-left transition-colors duration-300"
+                      style={{
+                        borderColor: on ? c : "#2b3138",
+                        backgroundColor: on ? `${c}0f` : "transparent",
+                      }}
+                    >
+                      <span
+                        className="display text-[clamp(1.2rem,2.6vw,1.8rem)]"
+                        style={{ color: on ? c : "#8a9197" }}
+                      >
+                        {m.name}
+                      </span>
+                      <span className="label mt-1.5 text-text-lo">{m.edition}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
+
+            <div className="mt-8 grid gap-x-6 gap-y-7 sm:grid-cols-2">
+              <Field name="name" label="Name" autoComplete="name" required className="reserve-field" />
+              <Field name="email" label="Email" type="email" autoComplete="email" required className="reserve-field" />
+              <Field name="phone" label="Phone" type="tel" autoComplete="tel" className="reserve-field" />
+              <Field name="room_size" label="Room size (sq ft)" inputMode="numeric" placeholder="e.g. 400" className="reserve-field" />
+
+              <div className="reserve-field sm:col-span-2">
+                <label htmlFor="space" className="label block text-text-lo">
+                  Space type
+                </label>
+                <select
+                  id="space"
+                  name="space"
+                  defaultValue=""
+                  className="mt-3 w-full appearance-none border-b border-edge-bright bg-transparent pb-3 text-base text-text-hi outline-none transition-colors focus:border-teal"
+                >
+                  <option value="" className="bg-ink">
+                    Select a space
+                  </option>
+                  {RESERVE.spaces.map((s) => (
+                    <option key={s} value={s} className="bg-ink">
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {status === "error" && (
+              <p role="alert" className="label mt-6 text-[#ff5a36]">
+                {error}
               </p>
-              <p className="mt-4 max-w-[40ch] text-sm leading-relaxed text-text-mid">
-                Your place in the first batch is held. We will be in touch with pricing, lead time
-                and a fitting date before we ship.
+            )}
+
+            <div className="reserve-field mt-9 flex flex-wrap items-center gap-5">
+              <Magnetic strength={0.22}>
+                <button
+                  type="submit"
+                  disabled={status === "sending"}
+                  className="label whitespace-nowrap rounded-full px-7 py-3.5 text-void transition-opacity duration-300 disabled:opacity-50"
+                  style={{ backgroundColor: accent }}
+                >
+                  {status === "sending" ? "Reserving…" : `Reserve ${chosen.name}`}
+                </button>
+              </Magnetic>
+              <p className="max-w-[34ch] text-xs leading-relaxed text-text-lo">
+                {/* The consent notice: what the details are for, and how to take them
+                    back (as easy as giving them — one email). */}
+                No payment now. We use these details only to contact you about this reservation
+                and the launch, and you can{" "}
+                <a href={WITHDRAW_MAILTO} className="text-text-mid underline underline-offset-2 hover:text-text-hi">
+                  withdraw at any time
+                </a>
+                . By reserving you agree to our{" "}
+                <Link href="/terms" className="text-text-mid underline underline-offset-2 hover:text-text-hi">
+                  Terms
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="text-text-mid underline underline-offset-2 hover:text-text-hi">
+                  Privacy Policy
+                </Link>
+                .
               </p>
             </div>
-          ) : (
-            <form onSubmit={submit} noValidate className="reserve-form">
-              {/* Honeypot. Invisible and unreachable for people; bots fill it
-                  and are quietly dropped in submit() above. */}
-              <input
-                type="text"
-                name="website"
-                tabIndex={-1}
-                autoComplete="off"
-                aria-hidden
-                className="absolute -left-[9999px] h-px w-px opacity-0"
-              />
-              {/* Model */}
-              <fieldset className="reserve-field">
-                <legend className="label text-text-lo">Choose a core</legend>
-                <div className="mt-4 grid grid-cols-2 gap-3">
-                  {MODELS.map((m) => {
-                    const on = m.id === model;
-                    const c = ACCENT[m.accent];
-                    return (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onClick={() => setModel(m.id)}
-                        aria-pressed={on}
-                        className="flex flex-col items-start rounded-lg border p-4 text-left transition-colors duration-300"
-                        style={{
-                          borderColor: on ? c : "#2b3138",
-                          backgroundColor: on ? `${c}0f` : "transparent",
-                        }}
-                      >
-                        <span
-                          className="display text-[clamp(1.2rem,2.6vw,1.8rem)]"
-                          style={{ color: on ? c : "#8a9197" }}
-                        >
-                          {m.name}
-                        </span>
-                        <span className="label mt-1.5 text-text-lo">{m.edition}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
-
-              <div className="mt-8 grid gap-x-6 gap-y-7 sm:grid-cols-2">
-                <Field name="name" label="Name" autoComplete="name" required className="reserve-field" />
-                <Field name="email" label="Email" type="email" autoComplete="email" required className="reserve-field" />
-                <Field name="phone" label="Phone" type="tel" autoComplete="tel" className="reserve-field" />
-                <Field name="room_size" label="Room size (sq ft)" inputMode="numeric" placeholder="e.g. 400" className="reserve-field" />
-
-                <div className="reserve-field sm:col-span-2">
-                  <label htmlFor="space" className="label block text-text-lo">
-                    Space type
-                  </label>
-                  <select
-                    id="space"
-                    name="space"
-                    defaultValue=""
-                    className="mt-3 w-full appearance-none border-b border-edge-bright bg-transparent pb-3 text-base text-text-hi outline-none transition-colors focus:border-teal"
-                  >
-                    <option value="" className="bg-ink">
-                      Select a space
-                    </option>
-                    {RESERVE.spaces.map((s) => (
-                      <option key={s} value={s} className="bg-ink">
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {status === "error" && (
-                <p role="alert" className="label mt-6 text-[#ff5a36]">
-                  {error}
-                </p>
-              )}
-
-              <div className="reserve-field mt-9 flex flex-wrap items-center gap-5">
-                <Magnetic strength={0.22}>
-                  <button
-                    type="submit"
-                    disabled={status === "sending"}
-                    className="label whitespace-nowrap rounded-full px-7 py-3.5 text-void transition-opacity duration-300 disabled:opacity-50"
-                    style={{ backgroundColor: accent }}
-                  >
-                    {status === "sending" ? "Reserving…" : `Reserve ${chosen.name}`}
-                  </button>
-                </Magnetic>
-                <p className="max-w-[34ch] text-xs leading-relaxed text-text-lo">
-                  No payment now, and we only contact you about this reservation. By reserving you
-                  agree to our{" "}
-                  <Link href="/terms" className="text-text-mid underline underline-offset-2 hover:text-text-hi">
-                    Terms
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/privacy" className="text-text-mid underline underline-offset-2 hover:text-text-hi">
-                    Privacy Policy
-                  </Link>
-                  .
-                </p>
-              </div>
-            </form>
-          )}
+          </form>
         </div>
       </div>
     </section>

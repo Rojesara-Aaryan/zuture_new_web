@@ -31,6 +31,23 @@ export const BRAND = {
   usp: "One small system that treats the air in a room, and decides how.",
 } as const;
 
+/* ------------------------------------------------------------------
+   RIGHTS — one copyright and brand notice, used by the footer, the Terms,
+   the page metadata and llms.txt.
+   No ™ or ®, and no claim of registration: no trade mark application has
+   been filed (confirmed by Zuture, 29 Sep 2026). Marking ® without a
+   registration is an offence (Trade Marks Act 1999, s. 107). The names and
+   logo are still protected: the logo artwork by copyright, and the names by
+   the law of passing off.
+   ------------------------------------------------------------------ */
+const YEAR = new Date().getFullYear();
+const MARKS = "Zuture, Z‑ACTIVE, Z‑PURE and the Zuture logo";
+export const RIGHTS = {
+  copyright: `© ${BRAND.founded}–${YEAR} ${BRAND.legal}. All rights reserved.`,
+  marks: MARKS,
+  brandLine: `${MARKS} belong to ${BRAND.legal}.`,
+} as const;
+
 export const CONTACT = {
   email: "info@zuture.co",
   phone: "+91 99989 37170",

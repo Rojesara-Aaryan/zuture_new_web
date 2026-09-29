@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { BRAND, CONTACT } from "@/data/site";
+import { BRAND, CONTACT, RIGHTS } from "@/data/site";
 
 export default function Footer() {
   return (
@@ -107,12 +107,19 @@ export default function Footer() {
 
       <div className="mt-12 flex flex-col gap-3 border-t border-edge pt-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="label text-text-lo">
-          &copy; {new Date().getFullYear()} {BRAND.legal} &middot; Made in India
+          {RIGHTS.copyright} &middot; Made in India
         </p>
         <p className="label text-text-lo">
           {BRAND.patent} &middot; Est. {BRAND.founded}
         </p>
       </div>
+      <p className="mt-4 max-w-[80ch] text-xs leading-relaxed text-text-lo">
+        {RIGHTS.brandLine} Content, product photography and design may not be copied or
+        reused without written permission.{" "}
+        <Link href="/terms#copyright" className="underline underline-offset-2 hover:text-text-hi">
+          Copyright notice
+        </Link>
+      </p>
     </footer>
   );
 }

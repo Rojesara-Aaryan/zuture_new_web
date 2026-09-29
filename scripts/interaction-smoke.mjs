@@ -406,6 +406,13 @@ async function seo() {
   check("robots.txt allows crawling and names the sitemap", /Allow: \//.test(robots) && /Sitemap:/.test(robots));
   const llms = await get("/llms.txt");
   check("llms.txt is served for AI engines", llms.startsWith("# Zuture") && llms.includes("## Questions and answers"));
+  const full = await get("/llms-full.txt");
+  check(
+    "llms-full.txt carries every page and what is not yet published",
+    full.startsWith("# Zuture") && ["## How it works", "## The models", "## Not yet published", "## About the company"].every((h) => full.includes(h)),
+  );
+  const home = await get("/");
+  check("pages link their plain-text version for LLM crawlers", /<link rel="alternate" type="text\/plain" href="[^"]*\/llms\.txt"/.test(home));
 
   await browser.close();
 }
@@ -450,6 +457,90 @@ async function mobile() {
   await browser.close();
 }
 
+/**
+ * The reservation form, end to end, without sending anything: EmailJS is
+ * intercepted in the browser, first to fail and then to succeed.
+ */
+async function reservation() {
+  head("reservation");
+  const browser = await chromium.launch();
+  const { page, errs } = await open(browser);
+  const sent = [];
+  let reply = { status: 400, body: "The template ID is invalid" };
+  await page.route("https://api.emailjs.com/**", async (r) => {
+    sent.push(JSON.parse(r.request().postData() || "{}"));
+    await r.fulfill({ status: reply.status, body: reply.body, headers: { "Access-Control-Allow-Origin": "*" } });
+  });
+  page.on("console", () => {}); // the failure is logged on purpose
+
+  await page.goto(URL + "/about#reserve", { waitUntil: "load", timeout: 90000 });
+  await page.waitForTimeout(INTRO_MS);
+
+  await page.click('button[type="submit"]');
+  await page.waitForTimeout(400);
+  check("empty form shows an error and sends nothing", (await page.isVisible('[role="alert"]')) && sent.length === 0);
+
+  await page.click('button:has-text("Z‑PURE"), button:has-text("Z-PURE")');
+  await page.fill("#name", "Smoke Test");
+  await page.fill("#email", "smoke@example.com");
+  await page.click('button[type="submit"]');
+  await page.waitForTimeout(1500);
+  const alert = (await page.textContent('[role="alert"]').catch(() => "")) || "";
+  check("a failed send says so and stays on the form", path(page) === "/about" && /did not go through/i.test(alert), alert.trim());
+
+  reply = { status: 200, body: "OK" };
+  await page.click('button[type="submit"]');
+  await page.waitForURL("**/thank-you**", { timeout: 10000 }).catch(() => {});
+  await page.waitForTimeout(1500);
+  const p = sent.at(-1)?.template_params || {};
+  check("the send carries the form fields", p.first_name === "Smoke" && p.reply_to === "smoke@example.com" && /Z-PURE/.test(p.selected_model || ""), JSON.stringify(p).slice(0, 120));
+  const h1 = (await page.textContent("h1").catch(() => "")) || "";
+  const lead = await page.evaluate(() => document.body.innerText);
+  check("success lands on /thank-you with the chosen model", path(page) === "/thank-you" && /Reserved/.test(h1) && /PURE/.test(lead), `${path(page)} "${h1.trim()}"`);
+  const robots = await page.getAttribute('meta[name="robots"]', "content");
+  check("thank-you page is kept out of search", /noindex/.test(robots || ""), robots || "");
+
+  check("no page errors", errs.length === 0, errs.join(" | "));
+  await browser.close();
+}
+
+/** The pinned phone CTA: there after the intro, gone at the footer, lands on the form. */
+async function mobileCta() {
+  head("sticky mobile CTA");
+  const browser = await chromium.launch();
+  const { page, errs } = await open(browser, { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  await page.goto(URL + "/system", { waitUntil: "load", timeout: 90000 });
+  await page.waitForTimeout(INTRO_MS);
+
+  const cta = 'a:has-text("Free · no payment")';
+  const shown = async () =>
+    page.evaluate(() => {
+      const a = [...document.querySelectorAll("a")].find((x) => x.textContent?.includes("Free · no payment"));
+      if (!a) return false;
+      const r = a.getBoundingClientRect();
+      return getComputedStyle(a.parentElement).opacity === "1" && r.bottom <= innerHeight && r.top > innerHeight / 2;
+    });
+  check("pinned at the bottom of the screen after the intro", await shown());
+
+  await page.evaluate(() => document.querySelector("footer")?.scrollIntoView());
+  await page.waitForTimeout(1200);
+  check("gets out of the way at the footer", !(await shown()));
+
+  await page.evaluate(() => window.scrollTo(0, 400));
+  await page.waitForTimeout(1500);
+  await page.click(cta);
+  await page.waitForTimeout(3500);
+  const top = await page.evaluate(() => document.querySelector("#reserve")?.getBoundingClientRect().top ?? null);
+  check("tapping it lands on the reservation form", path(page) === "/about" && top !== null && Math.abs(top) < 200, `${path(page)} top=${top}`);
+
+  await page.setViewportSize({ width: 1024, height: 800 });
+  await page.waitForTimeout(400);
+  check("not shown from tablet width up", !(await page.isVisible(cta)));
+
+  check("no page errors", errs.length === 0, errs.join(" | "));
+  await browser.close();
+}
+
 await desktop("first visit");
 await desktop("reload — preloader skipped", { reload: true });
 await desktop("reduced motion", { reducedMotion: "reduce" });
@@ -457,6 +548,8 @@ await routes();
 await heroRoundTrip();
 await caseHold();
 await mobile();
+await mobileCta();
+await reservation();
 await seo();
 
 console.log("");

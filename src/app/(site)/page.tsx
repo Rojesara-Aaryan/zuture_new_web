@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { PAGE_SEO, pageMeta } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import { PAGE_SEO, pageMeta, webPageLd } from "@/lib/seo";
 import Hero from "@/components/Hero";
 import Marquee from "@/components/Marquee";
 import Case from "@/components/Case";
@@ -12,6 +13,7 @@ export const metadata: Metadata = pageMeta(PAGE_SEO.home);
 export default function Page() {
   return (
     <>
+      <JsonLd data={webPageLd(PAGE_SEO.home)} />
       <Hero />
       <Marquee />
       <Case />

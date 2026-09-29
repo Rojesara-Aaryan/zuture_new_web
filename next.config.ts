@@ -10,12 +10,14 @@ const isDev = process.env.NODE_ENV !== "production";
  * for scripts and styles; what this policy buys is that nothing loads from, or
  * sends data to, anywhere but this site and EmailJS. There are no third-party
  * scripts, fonts are self-hosted by next/font, and the one outside connection is
- * the browser posting a reservation to api.emailjs.com. 'unsafe-eval' is only
- * needed by the dev server.
+ * the browser posting a reservation to api.emailjs.com. Vercel Analytics is
+ * served from this site's own /_vercel/insights path, so 'self' covers it in
+ * production; in development it loads a debug script from va.vercel-scripts.com.
+ * 'unsafe-eval' is only needed by the dev server.
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval' https://va.vercel-scripts.com" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",

@@ -3,7 +3,7 @@ import LegalPage from "@/components/LegalPage";
 import { PRIVACY } from "@/data/legal";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Zuture",
+  title: "Privacy Policy",
   description:
     "What Zuture does with personal data collected through this pre-launch website.",
   robots: { index: false, follow: true },

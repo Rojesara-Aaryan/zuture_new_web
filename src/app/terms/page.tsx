@@ -3,7 +3,7 @@ import LegalPage from "@/components/LegalPage";
 import { TERMS } from "@/data/legal";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions — Zuture",
+  title: "Terms & Conditions",
   description:
     "Terms governing use of the Zuture pre-launch website and reservation enquiries.",
   robots: { index: false, follow: true },

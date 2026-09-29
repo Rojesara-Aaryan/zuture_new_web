@@ -106,6 +106,10 @@ reach for that idea again, know it has been tried.
 
 ### Phones and tablets have their own layouts
 
+On phones (below 640px) the header has no room for "Reserve yours", so
+`MobileReserve.tsx` pins it to the bottom of the screen. It appears after the
+intro and slides away whenever the form or the footer is on screen.
+
 Below 1024px the site is deliberately redesigned rather than squeezed. Every
 rule for it sits behind a variant that cannot reach desktop — `max-sm:` for
 phones, `sm:max-lg:` / `max-lg:` for tablets — or uses `md:` only to set the
@@ -349,7 +353,7 @@ small grey labels (`--color-text-lo`, about 3.1:1 against the 4.5:1 minimum).
 Mobile LCP is 3.6–3.9s because headings are hidden in the HTML until their
 reveal animations run; the preloader itself adds only about 0.1s.
 
-## Search, answer engines and AI (SEO, AEO, GEO)
+## Search, answer engines and AI (SEO, AEO, GEO, LLMO)
 
 Everything lives in `src/lib/seo.ts`, and it follows the copy's rule: **nothing
 in metadata or structured data claims more than the pages do.** There is no
@@ -365,9 +369,10 @@ still running the old site.
 | Layer | What is there |
 | --- | --- |
 | SEO | A unique title, description and canonical on every page; one `<h1>` per page (three pages had none); `lang="en-IN"`; `sitemap.xml`; `robots.txt`; a web manifest; descriptive alt text on every photograph, kept beside its path in `SHOT_ALT` |
-| Structured data | `Organization` and `WebSite` site-wide; a `Product` per edition on /models; `FAQPage` on /faq; `BreadcrumbList` on inner pages |
-| AEO | `/faq`: 28 static questions (below). Native `<details>`, so every answer is in the server HTML, and `FAQPage` structured data is built from the same rows |
+| Structured data | `Organization` and `WebSite` site-wide; a `WebPage` (with `about`, `speakable` and its share image) on every page but /faq; a `Product` per edition on /models; `FAQPage` on /faq; `BreadcrumbList` on inner pages |
+| AEO | `/faq`: 35 static questions (below). Native `<details>`, so every answer is in the server HTML, and `FAQPage` structured data is built from the same rows |
 | GEO (generative engines) | `/llms.txt`, a plain-text summary generated from the same data as the pages; AI crawlers allowed by name in robots.txt; one definition sentence reused verbatim everywhere so engines learn one phrasing |
+| LLMO (language models) | `/llms.txt` (short) and `/llms-full.txt` (every page as text, with sources), both built by `src/lib/llms.ts`; a "Names" section so models spell and attribute Zuture correctly; a "Not yet published" section so an assistant asked for a price or CADR says "not announced" instead of guessing; `<link rel="alternate" type="text/plain">` to llms.txt on every page; 17 AI crawlers allowed by name, including the ones that fetch pages live while answering (ChatGPT-User, Claude-User, Perplexity-User) |
 | GEO (geography) | `en-IN`, `geo.region` IN-GJ, `areaServed` India, full Ahmedabad postal address in `Organization` |
 | Sharing | A share image per page in `public/og/`, with its own alt text |
 
@@ -420,6 +425,18 @@ metadata, structured data, alt text and llms.txt.
 
 ## Legal pages and media protection
 
+**Copyright.** One notice (`RIGHTS` in `src/data/site.ts`) feeds the footer,
+Terms §7 (`/terms#copyright`: Copyright Act 1957, passing off, IT Act s.43),
+the `copyright`/`rights` meta tags, `copyrightNotice` in structured data
+(Google Images shows the licence and credit), and llms.txt. No ™ or ® is used:
+no trade mark application has been filed, and ® without a registration is an
+offence. When an application is filed, ™ may be added; ® only once registered.
+
+Every original image also carries the notice inside the file (EXIF in WebP,
+text chunks in PNG). After adding or regenerating images, run
+`node scripts/stamp-copyright.mjs` — it only rewrites the file container, never
+the pixels, and checks that the decoded image is unchanged.
+
 `/privacy` and `/terms` are scoped to **what this site actually does**: shows
 information and takes reservation enquiries. They deliberately do not copy the
 live zuture.co policies, which cover an app, an account, a device and sensor
@@ -461,15 +478,29 @@ copied. Body text stays selectable; only media is locked.
 ## Before going live
 
 1. **Reservations** are wired to EmailJS (see "Going live"). Send one test
-   reservation after each deploy and confirm it arrives.
+   reservation after each deploy and confirm it arrives. A successful send
+   goes to `/thank-you?core=<model>` (noindex, not in the sitemap), so each
+   view of that page in analytics is one completed reservation.
 2. **Set a launch date** if you want a countdown. `BRAND.launchWindow` in
    `src/data/site.ts` is a placeholder; the hero currently says "Launching soon"
    rather than committing to a date.
 3. **No pricing anywhere**, by design — the info site's own policy is to direct
    pricing questions to the team.
-4. Add an OG image and favicon.
-5. **Close the legal open items** listed on `/privacy` and `/terms` — name a
-   Grievance Officer, and have both documents reviewed by counsel.
+4. **Switch on analytics**: Vercel → Project → Analytics → Enable. The
+   `<Analytics />` component is already in `src/app/layout.tsx` and does
+   nothing until then. It is cookieless, so no cookie banner is needed, and
+   the Privacy Policy already describes it.
+5. **Have counsel review `/privacy` and `/terms`.** The on-page "Still to be
+   completed" box has been removed (`OPEN_ITEMS` in `src/data/legal.ts` is
+   empty); add a line there to show it again. What is
+   covered today, scoped to a site that takes free reservations and sells
+   nothing: IT Act 2000 §43A and the SPDI Rules 2011 (privacy policy, purpose
+   and recipients named, option not to provide data, consent withdrawal, and a
+   named Grievance Officer — Nirali Joshi, CTO — resolving within one month),
+   and the DPDP Act 2023 notice and one-email withdrawal ahead of its rules
+   taking full effect. No cookie banner: the site sets no cookies. Return,
+   refund and e-commerce grievance rules (Consumer Protection (E-Commerce)
+   Rules 2020) start when you begin selling — publish those policies then.
 6. Correct the entity name on zuture.co, which still says "Zuture Technologies
    Pvt. Ltd." rather than "Zuture Enterprise Pvt Ltd".
 

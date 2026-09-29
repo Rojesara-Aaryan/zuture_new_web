@@ -16,7 +16,7 @@
  * answer engine quoting a made-up figure is worse than one quoting nothing.
  */
 import type { Metadata } from "next";
-import { BRAND, CONTACT, MODELS, PLATFORM, SHOT, SHOT_ALT } from "@/data/site";
+import { BRAND, CONTACT, MODELS, PLATFORM, RIGHTS, SHOT, SHOT_ALT } from "@/data/site";
 
 /**
  * Where the site actually lives.
@@ -159,6 +159,8 @@ export const websiteLd = {
   inLanguage: "en-IN",
   description: DEFINITION,
   publisher: { "@id": orgId },
+  copyrightHolder: { "@id": orgId },
+  copyrightNotice: `${RIGHTS.copyright} ${RIGHTS.brandLine}`,
 };
 
 /**
@@ -175,7 +177,17 @@ export const productsLd = MODELS.map((m) => {
     alternateName: `${name} ${m.edition}`,
     description: `${m.line} ${m.body}`,
     category: "Fresh air purifier and smart ventilation system",
-    image: { "@type": "ImageObject", url: abs(SHOT.models[m.id]), caption: SHOT_ALT.models[m.id] },
+    image: {
+      "@type": "ImageObject",
+      url: abs(SHOT.models[m.id]),
+      caption: SHOT_ALT.models[m.id],
+      // Shown by Google Images as the licence and credit for the photograph.
+      creditText: "Zuture",
+      copyrightNotice: RIGHTS.copyright,
+      creator: { "@id": orgId },
+      license: abs("/terms#copyright"),
+      acquireLicensePage: abs("/terms#copyright"),
+    },
     brand: { "@type": "Brand", name: "Zuture" },
     manufacturer: { "@id": orgId },
     countryOfOrigin: { "@type": "Country", name: "India" },
@@ -195,6 +207,26 @@ export const productsLd = MODELS.map((m) => {
     ],
     isRelatedTo: { "@id": abs(`/models#${m.id === "z-active" ? "z-pure" : "z-active"}`) },
   };
+});
+
+/**
+ * The page itself, tied to the site and the company. `speakable` points voice
+ * assistants at the h1, and `about` tells an engine which entity the page is
+ * describing, so it attributes what it reads to Zuture rather than guessing.
+ */
+export const webPageLd = (p: PageSeo) => ({
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": abs(`${p.path}#webpage`),
+  url: abs(p.path),
+  name: p.title,
+  description: p.description,
+  inLanguage: "en-IN",
+  isPartOf: { "@id": siteId },
+  about: { "@id": orgId },
+  publisher: { "@id": orgId },
+  primaryImageOfPage: { "@type": "ImageObject", url: abs(p.image.url), caption: p.image.alt },
+  speakable: { "@type": "SpeakableSpecification", cssSelector: ["h1"] },
 });
 
 export const breadcrumbLd = (trail: { name: string; path: string }[]) => ({
@@ -369,6 +401,8 @@ export function pageMeta(p: PageSeo): Metadata {
       canonical: p.path,
       // One language and one market; x-default says it is also the fallback.
       languages: { "en-IN": p.path, "x-default": p.path },
+      // <link rel="alternate"> to the plain-text version, for LLM crawlers (LLMO).
+      types: { "text/plain": "/llms.txt" },
     },
     openGraph: {
       type: "website",

@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import SmoothScroll from "@/components/SmoothScroll";
 import JsonLd from "@/components/JsonLd";
-import { BRAND } from "@/data/site";
+import { BRAND, RIGHTS } from "@/data/site";
 import { KEYWORDS, OG_IMAGE, SITE_URL, organizationLd, websiteLd } from "@/lib/seo";
 
 const archivo = Archivo({
@@ -61,7 +62,13 @@ export const metadata: Metadata = {
     ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
     : {}),
   // Geographic targeting: an Indian company, selling in India first.
-  other: { "geo.region": "IN-GJ", "geo.placename": "Ahmedabad, Gujarat, India" },
+  other: {
+    "geo.region": "IN-GJ",
+    "geo.placename": "Ahmedabad, Gujarat, India",
+    // Ownership, stated in every page's head for crawlers and scrapers alike.
+    copyright: RIGHTS.copyright,
+    rights: `${RIGHTS.copyright} ${RIGHTS.brandLine}`,
+  },
 };
 
 export const viewport: Viewport = {
@@ -96,6 +103,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             recognise the brand as one entity across every page. */}
         <JsonLd data={[organizationLd, websiteLd]} />
         <SmoothScroll>{children}</SmoothScroll>
+        {/* Vercel Web Analytics: cookieless page views, served from this
+            site's own domain. Starts counting once Analytics is enabled for
+            the project in the Vercel dashboard; a no-op until then. */}
+        <Analytics />
       </body>
     </html>
   );

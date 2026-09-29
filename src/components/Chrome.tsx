@@ -9,6 +9,7 @@ import Preloader from "./Preloader";
 import Nav from "./Nav";
 import ScrollProgress from "./ScrollProgress";
 import Footer from "./Footer";
+import MobileReserve from "./MobileReserve";
 
 /**
  * True once the intro has finished and the page is allowed to animate.
@@ -71,6 +72,7 @@ export default function Chrome({ children }: { children: React.ReactNode }) {
       <Nav start={ready} />
       <main>{children}</main>
       <Footer />
+      <MobileReserve start={ready} />
     </ReadyContext.Provider>
   );
 }
